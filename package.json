@@ -1,0 +1,28 @@
+{
+  "name": "brand-analysis-app",
+  "version": "3.0.0",
+  "description": "智能分析应用平台 - 支持品牌定位分析和商圈调研分析",
+  "main": "proxy-server.js",
+  "scripts": {
+    "start": "node proxy-server.js",
+    "dev": "nodemon proxy-server.js",
+    "install-deps": "npm install express cors node-fetch"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "brand-analysis",
+    "market-research", 
+    "ai-analysis",
+    "gemini-pro",
+    "charts"
+  ],
+  "author": "Augment Agent",
+  "license": "MIT"
+}
