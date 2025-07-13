@@ -1,7 +1,7 @@
 {
   "name": "brand-analysis-app",
-  "version": "3.0.0",
-  "description": "智能分析应用平台 - 支持品牌定位分析和商圈调研分析",
+  "version": "3.1.0",
+  "description": "智能分析应用平台 - 支持品牌定位分析、商圈调研分析和店铺活动方案生成",
   "main": "proxy-server.js",
   "scripts": {
     "start": "node proxy-server.js",
@@ -18,9 +18,11 @@
   },
   "keywords": [
     "brand-analysis",
-    "market-research", 
+    "market-research",
+    "store-activity",
     "ai-analysis",
     "gemini-pro",
+    "daisyui",
     "charts"
   ],
   "author": "Augment Agent",

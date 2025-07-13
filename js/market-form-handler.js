@@ -216,15 +216,21 @@ class MarketFormHandler {
      */
     resetForm() {
         if (!this.form) return;
-        
+
         this.form.reset();
-        
+
+        // 重置后设置AI截图分析功能为默认开启状态
+        const screenshotAnalysisCheckbox = document.getElementById('market-enableScreenshotAnalysis');
+        if (screenshotAnalysisCheckbox) {
+            screenshotAnalysisCheckbox.checked = true;
+        }
+
         // 清除所有错误信息
         Object.keys(this.validationRules).forEach(fieldName => {
             this.clearFieldError(fieldName);
         });
-        
-        console.log('[商圈分析] 表单已重置');
+
+        console.log('[商圈分析] 表单已重置，AI截图分析功能已设为默认开启');
     }
     
     /**

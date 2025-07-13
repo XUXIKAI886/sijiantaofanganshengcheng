@@ -25,10 +25,10 @@
     overflow: hidden;
 }
 
-/* 表单区块 - 更紧凑设计 */
+/* 表单区块 - 超紧凑设计 */
 .form-section {
-    margin-bottom: 1rem;
-    padding: 1rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
     background: var(--form-light);
     border-radius: 10px;
     border: 2px solid var(--form-border);
@@ -37,34 +37,34 @@
 
 .form-section-title {
     color: var(--form-secondary);
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    margin-bottom: 0.6rem;
-    padding-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
     border-bottom: 2px solid var(--form-primary);
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 /* 移除emoji图标，只保留FontAwesome图标 */
 
-/* 表单行 - 更紧凑设计 */
+/* 表单行 - 超紧凑设计 */
 .form-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 0.6rem;
-    margin-bottom: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-/* 表单组 - 更紧凑设计 */
+/* 表单组 - 超紧凑设计 */
 .form-group {
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.5rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.25rem;
     color: var(--form-secondary);
     font-weight: 600;
     font-size: 0.9rem;
@@ -77,14 +77,14 @@
     font-weight: bold;
 }
 
-/* 输入框样式 - 更紧凑设计 */
+/* 输入框样式 - 超紧凑设计 */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
 select,
 textarea {
     width: 100%;
-    padding: 0.6rem 0.8rem;
+    padding: 0.5rem 0.75rem;
     border: 2px solid var(--form-border);
     border-radius: 8px;
     font-size: 0.95rem;
@@ -130,13 +130,13 @@ textarea {
     line-height: 1.5;
 }
 
-/* 复选框组 - 更紧凑设计 */
+/* 复选框组 - 超紧凑设计 */
 .checkbox-group {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.4rem;
-    margin-top: 0.3rem;
-    padding: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
     background: var(--form-bg);
     border-radius: 8px;
     border: 1px solid var(--form-border);
@@ -172,10 +172,10 @@ textarea {
     font-weight: 500;
 }
 
-/* 价格滑块 */
+/* 价格滑块 - 超紧凑设计 */
 .price-range {
-    margin-top: 0.75rem;
-    padding: 1rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
     background: var(--form-bg);
     border-radius: 12px;
     border: 1px solid var(--form-border);
@@ -246,11 +246,11 @@ input[type="range"]::-moz-range-thumb {
     background-color: #FFEBEE;
 }
 
-/* 表单操作按钮 */
+/* 表单操作按钮 - 超紧凑设计 */
 .form-actions {
     text-align: center;
-    margin-top: 2rem;
-    padding: 2rem 1.5rem;
+    margin-top: 1.5rem;
+    padding: 1.5rem 1rem;
     background: var(--form-light);
     border-radius: 0 0 16px 16px;
     border-top: 3px solid var(--form-primary);
@@ -305,17 +305,17 @@ input[type="range"]::-moz-range-thumb {
     }
 
     .form-section {
-        padding: 1rem;
-        margin-bottom: 1rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
     }
 
     .checkbox-group {
         grid-template-columns: 1fr;
-        gap: 0.5rem;
+        gap: 0.4rem;
     }
 
     .form-actions {
-        padding: 1.5rem 1rem;
+        padding: 1.25rem 0.75rem;
     }
 
     .form-actions .btn {
@@ -345,11 +345,11 @@ input[type="range"]::-moz-range-thumb {
     }
 
     .checkbox-group {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
 
     .price-range {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
 }
 
@@ -361,26 +361,29 @@ input[type="range"]::-moz-range-thumb {
     background-color: #F1F8E9;
 }
 
-/* 占位符样式 */
+/* 占位符样式 - 优化设计，移除斜体，使用柔和颜色 */
 ::placeholder {
-    color: var(--form-text-light);
-    opacity: 0.7;
-    font-style: italic;
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
 }
 
 ::-webkit-input-placeholder {
-    color: var(--form-text-light);
-    opacity: 0.7;
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
 }
 
 ::-moz-placeholder {
-    color: var(--form-text-light);
-    opacity: 0.7;
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
 }
 
 :-ms-input-placeholder {
-    color: var(--form-text-light);
-    opacity: 0.7;
+    color: #9ca3af;
+    opacity: 0.8;
+    font-style: normal;
 }
 
 /* 自定义品类输入框 */

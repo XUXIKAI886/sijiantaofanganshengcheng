@@ -44,11 +44,6 @@ class FormHandler {
                 required: false,
                 maxLength: 200,
                 message: '主营产品描述长度不能超过200个字符'
-            },
-            features: {
-                required: false,
-                maxLength: 500,
-                message: '经营特色描述长度不能超过500个字符'
             }
         };
     }
@@ -227,7 +222,6 @@ class FormHandler {
         data.storeName = formData.get('storeName')?.trim() || '';
         data.address = formData.get('address')?.trim() || '';
         data.mainProducts = formData.get('mainProducts')?.trim() || '';
-        data.features = formData.get('features')?.trim() || '';
         
         // 处理品类
         data.category = formData.get('category')?.trim() || '';

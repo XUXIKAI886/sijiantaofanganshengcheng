@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="css/form.css">
     <link rel="stylesheet" href="css/report.css">
 
-    <link rel="stylesheet" href="css/market-analysis.css?v=20250628-14">
+    <link rel="stylesheet" href="css/market-analysis.css?v=20250713-15">
 
     <style>
         /* 主题色彩已移至 theme.css 统一管理 */
@@ -102,6 +102,139 @@
             text-align: center;
             padding: 2rem 0;
             margin-top: auto;
+        }
+
+        /* API选择器样式 */
+        .api-selector-container {
+            margin-top: 0.5rem;
+        }
+
+        .api-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            height: 100%;
+        }
+
+        .api-option:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .api-option.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .api-option-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .api-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .api-info {
+            flex: 1;
+        }
+
+        .api-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .api-provider {
+            font-size: 0.8rem;
+        }
+
+        .api-status {
+            margin-left: auto;
+        }
+
+        .api-description {
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .api-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .feature-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .api-option.selected .feature-tag {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .feature-tag.feature-supported {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .feature-tag.feature-limited {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .api-option.selected .feature-tag.feature-supported {
+            background: #a7f3d0;
+            color: #064e3b;
+        }
+
+        .api-option.selected .feature-tag.feature-limited {
+            background: #fde68a;
+            color: #78350f;
+        }
+
+        .api-current-selection {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .api-option {
+                margin-bottom: 0.75rem;
+            }
+
+            .api-features {
+                margin-top: 0.5rem;
+            }
+
+            .feature-tag {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.4rem;
+            }
         }
 
         .app-footer p {
@@ -546,34 +679,67 @@
             font-size: 0.9em;
         }
 
-        /* 竞争对手总结区域主题化 */
+        /* 竞争对手总结区域主题化 - 现代化设计 */
         #market-report-section .competitor-summary-section {
-            background: linear-gradient(135deg, var(--theme-light), var(--theme-bg)) !important;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 25px;
-            border-left: 4px solid var(--theme-primary) !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--theme-light, #EFF6FF), var(--theme-bg, #F8FAFC)) !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            margin-top: 25px !important;
+            border-left: 4px solid var(--theme-primary, #1E3A8A) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid var(--theme-accent, #60A5FA) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        #market-report-section .competitor-summary-section::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 3px !important;
+            background: linear-gradient(90deg, var(--theme-primary, #1E3A8A), var(--theme-secondary, #3B82F6)) !important;
         }
 
         #market-report-section .competitor-summary-section h4 {
-            color: var(--theme-primary) !important;
-            margin: 0 0 15px 0;
-            font-size: 1.1em;
-            font-weight: 600;
+            color: var(--theme-primary, #1E3A8A) !important;
+            margin: 0 0 15px 0 !important;
+            font-size: 1.2em !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+
+        #market-report-section .competitor-summary-section h4::before {
+            content: '📊' !important;
+            font-size: 1.1em !important;
         }
 
         #market-report-section .competitor-summary-item {
-            margin: 0;
-            color: #333;
-            background: white;
-            padding: 12px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 0 0 12px 0 !important;
+            color: #333 !important;
+            background: white !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+            border: 1px solid var(--theme-accent, #60A5FA) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #market-report-section .competitor-summary-item:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+        }
+
+        #market-report-section .competitor-summary-item:last-child {
+            margin-bottom: 0 !important;
         }
 
         #market-report-section .competitor-summary-item strong {
-            color: var(--theme-primary) !important;
+            color: var(--theme-secondary, #3B82F6) !important;
+            font-weight: 600 !important;
         }
 
         /* 表格标题行主题化 */
@@ -647,9 +813,10 @@
         }
 
         #market-report-section .market-overview-cards {
-            display: flex !important;
-            gap: 15px !important;
-            flex-wrap: wrap !important;
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 20px !important;
+            margin-top: 20px !important;
         }
 
         #market-report-section .market-overview-card {
@@ -657,8 +824,7 @@
             border: 1px solid var(--theme-accent) !important;
             border-radius: 8px !important;
             padding: 15px !important;
-            flex: 1 !important;
-            min-width: 200px !important;
+            text-align: center !important;
         }
 
         #market-report-section .market-overview-card h3 {
@@ -679,6 +845,48 @@
             font-size: 12px !important;
             line-height: 1.4 !important;
             margin: 0 !important;
+        }
+
+        /* 响应式设计 - 商圈概况卡片 */
+        @media (max-width: 1200px) {
+            #market-report-section .market-overview-cards {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 16px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #market-report-section .market-overview-cards {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            #market-report-section .market-overview-card {
+                padding: 12px !important;
+            }
+
+            #market-report-section .market-score {
+                font-size: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #market-report-section .market-overview-cards {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            #market-report-section .market-overview-card h3 {
+                font-size: 12px !important;
+            }
+
+            #market-report-section .market-score {
+                font-size: 18px !important;
+            }
+
+            #market-report-section .market-overview-card p {
+                font-size: 11px !important;
+            }
         }
 
         #market-report-section .data-card .card-title {
@@ -828,6 +1036,16 @@
             background: var(--theme-light) !important;
             border-color: var(--theme-accent) !important;
             border-left-color: var(--theme-primary) !important;
+        }
+
+        /* 强制设置删除按钮叉号大小 - 最高优先级 */
+        .market-file-remove i,
+        button.market-file-remove i,
+        .market-file-remove > i,
+        #market-file-preview .market-file-remove i {
+            font-size: 10px !important;
+            width: auto !important;
+            height: auto !important;
         }
 
         #market-report-section .visualization-section h2 {
@@ -1145,6 +1363,13 @@
             transform: scale(1.01);
         }
 
+        .upload-area.dragover {
+            border-color: var(--market-secondary) !important;
+            background: linear-gradient(135deg, #e8f5e9 0%, var(--market-light) 100%) !important;
+            transform: scale(1.02) !important;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+        }
+
         .upload-icon {
             font-size: 2rem;
             color: var(--market-primary);
@@ -1215,6 +1440,12 @@
             color: var(--market-primary);
             font-weight: 600;
             margin-bottom: 0;
+        }
+
+        /* 报告展示区域宽度限制 */
+        #market-report-section {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
         }
 
         /* 报告操作按钮样式 */
@@ -1369,6 +1600,39 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">
+                                        <i class="fas fa-robot me-1"></i>
+                                        AI分析引擎
+                                    </label>
+                                    <div class="api-info-display">
+                                        <div class="api-option selected">
+                                            <div class="api-option-header">
+                                                <div class="api-icon">
+                                                    <i class="fas fa-bolt" style="color: #ff6b35;"></i>
+                                                </div>
+                                                <div class="api-info">
+                                                    <h6 class="api-name mb-0">Gemini 2.5 Flash Lite</h6>
+                                                    <small class="api-provider text-muted">haxiaiplus.cn</small>
+                                                </div>
+                                                <div class="api-status">
+                                                    <span class="badge bg-success">稳定</span>
+                                                </div>
+                                            </div>
+                                            <div class="api-description">
+                                                <small class="text-muted">Gemini 2.5 Flash Lite模型，支持截图分析，性能稳定</small>
+                                            </div>
+                                            <div class="api-features">
+                                                <span class="feature-tag">支持截图分析</span>
+                                                <span class="feature-tag">响应快速</span>
+                                                <span class="feature-tag">性能稳定</span>
+                                                <span class="feature-tag">多模态支持</span>
+                                                <span class="feature-tag feature-supported">✓ 支持截图分析</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1423,7 +1687,7 @@
                                                         <small class="market-file-size text-muted d-block"></small>
                                                     </div>
                                                 </div>
-                                                <button type="button" class="btn btn-outline-danger btn-sm market-file-remove" title="移除文件">
+                                                <button type="button" class="market-file-remove" title="移除文件">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
@@ -1440,7 +1704,7 @@
 
                                 <div class="col-12 mt-2">
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="market-enableScreenshotAnalysis" name="enableScreenshotAnalysis">
+                                        <input class="form-check-input" type="checkbox" id="market-enableScreenshotAnalysis" name="enableScreenshotAnalysis" checked>
                                         <label class="form-check-label" for="market-enableScreenshotAnalysis">
                                             <i class="fas fa-robot me-2 text-success"></i>
                                             启用AI截图分析功能
@@ -1507,7 +1771,7 @@
                 <div class="text-center p-5 bg-white rounded-4 shadow-lg">
                     <div class="loading-spinner mx-auto mb-3"></div>
                     <h5 class="text-success mb-2">正在调用AI生成商圈分析报告...</h5>
-                    <p class="text-muted mb-0">请稍候，这可能需要1-2分钟</p>
+                    <p class="text-muted mb-0">请稍候，这可能需要10-30秒</p>
                 </div>
             </div>
         </main>
@@ -1600,41 +1864,8 @@
             }
         });
 
-        // 文件上传区域交互增强
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadArea = document.getElementById('market-file-upload-area');
-            const fileInput = document.getElementById('market-screenshot');
-
-            if (uploadArea && fileInput) {
-                // 点击上传区域触发文件选择
-                uploadArea.addEventListener('click', function() {
-                    fileInput.click();
-                });
-
-                // 拖拽功能
-                uploadArea.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.add('border-success');
-                });
-
-                uploadArea.addEventListener('dragleave', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.remove('border-success');
-                });
-
-                uploadArea.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.remove('border-success');
-
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        fileInput.files = files;
-                        // 触发文件选择事件
-                        const event = new Event('change', { bubbles: true });
-                        fileInput.dispatchEvent(event);
-                    }
-                });
-            }
+        // 文件上传功能已移至 MarketFormHandler 类中统一管理
+        // 避免重复事件监听器导致的双重弹窗问题
 
             // 添加输入框焦点效果
             const inputs = document.querySelectorAll('.form-control, .form-select');
@@ -1648,6 +1879,9 @@
                 });
             });
         });
+
+        // 商圈调研模块初始化
+        console.log('[商圈调研] 使用统一的Gemini 2.5 Flash Lite API');
     </script>
 </body>
 </html>

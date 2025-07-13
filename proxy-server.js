@@ -18,6 +18,20 @@ app.use(express.json());
 // 静态文件服务
 app.use(express.static(__dirname));
 
+// API配置映射
+const API_CONFIGS = {
+    // Gemini 2.5 Flash Lite (haxiaiplus.cn) - 统一API
+    'gemini-2.5-flash-lite-preview-06-17': {
+        url: 'https://haxiaiplus.cn/v1/chat/completions',
+        defaultKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N'
+    },
+    // Gemini Pro (annyun.cn) - 店铺活动方案模块支持
+    'gemini-pro': {
+        url: 'https://api.annyun.cn/v1/chat/completions',
+        defaultKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N'
+    }
+};
+
 // API代理路由
 app.post('/api/chat/completions', async (req, res) => {
     try {
@@ -25,6 +39,20 @@ app.post('/api/chat/completions', async (req, res) => {
         console.log('📝 请求模型:', req.body?.model);
         console.log('🔑 Authorization头:', req.headers.authorization ? '已提供' : '未提供');
         console.log('📊 请求体大小:', JSON.stringify(req.body).length, '字符');
+
+        // 根据模型确定API配置
+        const model = req.body?.model;
+        const apiConfig = API_CONFIGS[model];
+
+        if (!apiConfig) {
+            console.log('❌ 未知模型:', model);
+            return res.status(400).json({
+                error: {
+                    message: `不支持的模型: ${model}`,
+                    type: 'invalid_request_error'
+                }
+            });
+        }
 
         // 构建请求头
         const headers = {
@@ -35,13 +63,13 @@ app.post('/api/chat/completions', async (req, res) => {
         if (req.headers.authorization) {
             headers['Authorization'] = req.headers.authorization;
         } else {
-            // 如果前端没有提供，使用默认的DeepSeek API密钥
-            headers['Authorization'] = 'Bearer sk-e4f35cb4efca4f5a8d8efcb7afb400ca';
+            // 使用对应API的默认密钥
+            headers['Authorization'] = `Bearer ${apiConfig.defaultKey}`;
         }
 
-        console.log('🌐 发送请求到:', 'https://api.deepseek.com/chat/completions');
+        console.log('🌐 发送请求到:', apiConfig.url);
 
-        const response = await fetch('https://api.deepseek.com/chat/completions', {
+        const response = await fetch(apiConfig.url, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(req.body)

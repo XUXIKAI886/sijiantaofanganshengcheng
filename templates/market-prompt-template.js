@@ -202,17 +202,18 @@ ${screenshotData}
     </div>
 
     <!-- 竞争对手总结 -->
-    <div style="background: linear-gradient(135deg, #f8f9fa, #E8F5E9); padding: 20px; border-radius: 8px; margin-top: 25px; border-left: 4px solid #4CAF50; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);">
-        <h4 style="color: #2E7D32; margin: 0 0 15px 0; font-size: 1.1em; font-weight: 600;">竞争对手总结</h4>
+    <div style="background: linear-gradient(135deg, var(--theme-light, #EFF6FF), var(--theme-bg, #F8FAFC)); padding: 20px; border-radius: 12px; margin-top: 25px; border-left: 4px solid var(--theme-primary, #1E3A8A); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border: 1px solid var(--theme-accent, #60A5FA); position: relative; overflow: hidden;">
+        <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--theme-primary, #1E3A8A), var(--theme-secondary, #3B82F6));"></div>
+        <h4 style="color: var(--theme-primary, #1E3A8A); margin: 0 0 15px 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;">📊 竞争对手总结</h4>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-            <p style="margin: 0; color: #333; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <strong style="color: #4CAF50;">主要产品类型：</strong> [总结主要产品类型，如：炒饭、快餐、粥类、汉堡]
+            <p style="margin: 0 0 12px 0; color: #333; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--theme-accent, #60A5FA); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.06)'">
+                <strong style="color: var(--theme-secondary, #3B82F6); font-weight: 600;">主要产品类型：</strong> [总结主要产品类型，如：炒饭、快餐、粥类、汉堡]
             </p>
-            <p style="margin: 0; color: #333; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <strong style="color: #4CAF50;">定价策略：</strong> [总结定价策略，如：人均消费19-27元，主打性价比]
+            <p style="margin: 0 0 12px 0; color: #333; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--theme-accent, #60A5FA); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.06)'">
+                <strong style="color: var(--theme-secondary, #3B82F6); font-weight: 600;">定价策略：</strong> [总结定价策略，如：人均消费19-27元，主打性价比]
             </p>
-            <p style="margin: 0; color: #333; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <strong style="color: #4CAF50;">共同特点：</strong> [总结共同特点，如：高评分、高销量、多为热销榜前列]
+            <p style="margin: 0 0 12px 0; color: #333; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid var(--theme-accent, #60A5FA); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.06)'">
+                <strong style="color: var(--theme-secondary, #3B82F6); font-weight: 600;">共同特点：</strong> [总结共同特点，如：高评分、高销量、多为热销榜前列]
             </p>
         </div>
     </div>
@@ -250,7 +251,7 @@ ${screenshotData}
 </div>
 
 <!-- 市场定位分析 -->
-<div class="market-analysis-section">
+<div class="market-analysis-section market-positioning-section">
     <h2 class="market-section-title">市场定位分析</h2>
     <div class="market-analysis-content">
         <h3>竞争环境评估</h3>
@@ -270,7 +271,7 @@ ${screenshotData}
 </div>
 
 <!-- 针对我的店铺的优化建议 -->
-<div class="market-analysis-section">
+<div class="market-analysis-section market-optimization-section">
     <h2 class="market-section-title">针对"${storeName || '我的店铺'}"的优化建议</h2>
     <div class="market-analysis-content">
         <h3>菜品优化建议</h3>
@@ -307,7 +308,7 @@ ${screenshotData}
 </div>
 
 <!-- 综合建议 -->
-<div class="market-analysis-section">
+<div class="market-analysis-section market-comprehensive-section">
     <h2 class="market-section-title">综合建议和行动计划</h2>
     <div class="market-analysis-content">
         <h3>核心优化方向</h3>
@@ -360,10 +361,31 @@ ${screenshotData}
      */
     static parseResponse(response) {
         try {
-            // 直接返回HTML格式的响应
+            // 清理AI响应中的markdown代码块标记
+            let cleanedResponse = response;
+
+            // 移除开头的```html标记
+            cleanedResponse = cleanedResponse.replace(/^```html\s*/i, '');
+
+            // 移除结尾的```标记
+            cleanedResponse = cleanedResponse.replace(/\s*```\s*$/i, '');
+
+            // 移除其他可能的代码块标记
+            cleanedResponse = cleanedResponse.replace(/```html/gi, '');
+            cleanedResponse = cleanedResponse.replace(/```/g, '');
+
+            // 移除AI的介绍性文字和多余话语
+            cleanedResponse = this.removeAIIntroText(cleanedResponse);
+
+            // 清理多余的空白字符
+            cleanedResponse = cleanedResponse.trim();
+
+            console.log('[模板解析] 原始响应长度:', response.length);
+            console.log('[模板解析] 清理后响应长度:', cleanedResponse.length);
+
             return {
                 success: true,
-                data: response,
+                data: cleanedResponse,
                 type: 'html'
             };
         } catch (error) {
@@ -445,6 +467,68 @@ ${screenshotData}
             words: prompt.split(/\s+/).length,
             estimatedTokens: Math.ceil(prompt.length / 4) // 粗略估算
         };
+    }
+
+    /**
+     * 移除AI的介绍性文字和多余话语
+     * @param {string} content - 原始内容
+     * @returns {string} - 清理后的内容
+     */
+    static removeAIIntroText(content) {
+        let cleanedContent = content;
+
+        // 移除常见的AI介绍性开头文字
+        const introPatterns = [
+            // 匹配"好的，作为...专家，我将..."这类开头（更全面的匹配）
+            /^好的[，,]\s*作为.*?专家[，,]\s*我将.*?分析[。.]?\s*/is,
+            // 匹配"好的，作为...专家，我将基于..."这类开头
+            /^好的[，,]\s*作为.*?专家[，,]\s*我将基于.*?分析[。.]?\s*/is,
+            // 匹配"作为...专家，我将..."这类开头
+            /^作为.*?专家[，,]\s*我将.*?分析[。.]?\s*/is,
+            // 匹配"作为一名...专家，我将..."这类开头
+            /^作为一名.*?专家[，,]\s*我将.*?分析[。.]?\s*/is,
+            // 匹配"我将为您提供..."这类开头
+            /^我将为您提供.*?分析[。.]?\s*/is,
+            // 匹配"我将基于您提供的..."这类开头
+            /^我将基于您提供的.*?分析[。.]?\s*/is,
+            // 匹配"以下是...分析报告"这类开头
+            /^以下是.*?分析报告[：:]?\s*/is,
+            // 匹配"根据您提供的信息..."这类开头
+            /^根据您提供的信息[，,].*?分析[。.]?\s*/is,
+            // 匹配"基于您提供的店铺信息..."这类开头
+            /^基于您提供的店铺信息[，,].*?分析[。.]?\s*/is,
+            // 匹配包含```html的开头段落
+            /^[^<]*```html[^<]*/is,
+            // 匹配其他常见的AI回复开头
+            /^很高兴为您.*?分析[。.]?\s*/is,
+            /^基于您的需求.*?分析[。.]?\s*/is,
+            // 匹配完整的介绍段落（包含店铺名称的）
+            /^好的[，,].*?对[""].*?[""].*?进行.*?分析[。.]?\s*/is,
+            // 匹配任何以"好的"开头的长段落介绍
+            /^好的[，,].*?分析[。.]?\s*/is,
+            // 商圈调研特有的开头
+            /^根据您提供的商圈信息.*?分析[。.]?\s*/is,
+            /^基于.*?商圈的具体情况.*?分析[。.]?\s*/is
+        ];
+
+        // 逐个应用清理规则
+        for (const pattern of introPatterns) {
+            cleanedContent = cleanedContent.replace(pattern, '');
+        }
+
+        // 移除开头的空白字符和换行
+        cleanedContent = cleanedContent.trim();
+
+        // 如果清理后内容为空或太短，返回原内容
+        if (cleanedContent.length < 50) {
+            console.warn('[商圈分析-内容清理] 清理后内容过短，保留原内容');
+            return content;
+        }
+
+        console.log('[商圈分析-内容清理] AI介绍文字清理完成');
+        console.log('[商圈分析-内容清理] 原始长度:', content.length, '清理后长度:', cleanedContent.length);
+
+        return cleanedContent;
     }
 }
 

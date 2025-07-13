@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/theme.css?v=20250709-01">
     <!-- 原有样式文件 -->
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/form.css?v=20250709-04">
+    <link rel="stylesheet" href="css/form.css?v=20250713-01">
     <link rel="stylesheet" href="css/report.css">
 
     
@@ -642,26 +642,26 @@
             transform: scale(1.1) !important;
         }
 
-        /* 紧凑网格布局 */
+        /* 超紧凑网格布局 */
         .form-row {
-            margin-bottom: 1rem !important;
+            margin-bottom: 0.5rem !important;
             display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-            gap: 1rem !important;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+            gap: 0.5rem !important;
         }
 
         .form-group {
-            margin-bottom: 1rem !important;
+            margin-bottom: 0.5rem !important;
             position: relative !important;
         }
 
-        /* 紧凑复选框组 */
+        /* 超紧凑复选框组 */
         .checkbox-group {
             display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-            gap: 0.5rem !important;
-            margin-bottom: 0.75rem !important;
-            padding: 0.75rem !important;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+            gap: 0.35rem !important;
+            margin-bottom: 0.5rem !important;
+            padding: 0.5rem !important;
             background: #f8fafc !important;
             border-radius: 8px !important;
             border: 1px solid #e2e8f0 !important;
@@ -678,8 +678,8 @@
             margin-left: 0 !important;
             display: flex !important;
             align-items: center !important;
-            gap: 0.5rem !important;
-            padding: 0.5rem 0.75rem !important;
+            gap: 0.4rem !important;
+            padding: 0.4rem 0.6rem !important;
             border-radius: 6px !important;
             cursor: pointer !important;
             background: white !important;
@@ -690,30 +690,30 @@
             transform: none !important;
         }
 
-        /* 超现代化价格滑块 */
+        /* 超现代化价格滑块 - 紧凑设计 */
         .price-range-container {
-            margin-bottom: 1rem !important;
+            margin-bottom: 0.75rem !important;
         }
 
         .price-display {
             background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
             border: none !important;
             border-radius: 16px !important;
-            padding: 1.25rem !important;
+            padding: 1rem !important;
             text-align: center !important;
             color: white !important;
             font-weight: 700 !important;
-            font-size: 1.1rem !important;
+            font-size: 1rem !important;
             box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25) !important;
             letter-spacing: 0.5px !important;
             text-transform: uppercase !important;
         }
 
-        /* 超现代化文本区域 */
+        /* 超现代化文本区域 - 紧凑设计 */
         textarea.form-control, textarea {
-            min-height: 100px !important;
+            min-height: 80px !important;
             resize: vertical !important;
-            line-height: 1.6 !important;
+            line-height: 1.5 !important;
         }
 
         /* 现代化提示文本 */
@@ -1241,15 +1241,6 @@
                                            placeholder="如：日式盖饭、炒饭、轻食沙拉" maxlength="200">
                                 </div>
                             </div>
-
-                            <div class="form-group" data-field="features">
-                                <label for="features" class="form-label">
-                                    <i class="fas fa-star"></i>
-                                    经营特色
-                                </label>
-                                <textarea id="features" name="features" rows="3" class="form-control"
-                                          placeholder="请描述店铺的经营特色和优势，如：健康低脂、新鲜食材、快速出餐等" maxlength="500"></textarea>
-                            </div>
                         </div>
 
                         <!-- 提交按钮 -->
@@ -1305,7 +1296,7 @@
                     <div class="loading-content">
                         <div class="loading-spinner-large"></div>
                         <p class="loading-text">正在调用AI生成品牌分析报告...</p>
-                        <p class="loading-subtext">请稍候，这可能需要1-2分钟</p>
+                        <p class="loading-subtext">请稍候，这可能需要10-20秒</p>
                     </div>
                 </div>
             </div>
@@ -1315,7 +1306,7 @@
     <!-- 页脚 -->
     <footer class="app-footer">
         <div class="container">
-            <p>&copy; 2025 呈尚策划 - 基于DeepSeek AI技术 | 专业品牌定位分析</p>
+            <p>&copy; 2025 呈尚策划 - 基于Gemini 2.5 Flash Lite AI技术 | 专业品牌定位分析</p>
         </div>
     </footer>
 

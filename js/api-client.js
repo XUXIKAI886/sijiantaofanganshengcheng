@@ -1,16 +1,16 @@
 /**
- * DeepSeek API 客户端
- * 负责与DeepSeek API的通信，专业的品牌分析服务
+ * Gemini 2.5 Flash Lite API 客户端
+ * 负责与Gemini 2.5 Flash Lite API的通信，专业的品牌分析服务
  */
 
 class APIClient {
     constructor() {
         this.config = {
             baseURL: this.getAPIBaseURL(),
-            apiKey: 'sk-e4f35cb4efca4f5a8d8efcb7afb400ca',
-            model: 'deepseek-chat',
+            apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
+            model: 'gemini-2.5-flash-lite-preview-06-17',
             temperature: 0.8,
-            max_tokens: 8192,
+            max_tokens: 16384, // 增加到16K tokens，与商圈调研模块一致
             timeout: 360000 // 360秒超时，支持更复杂的分析
         };
 
@@ -32,10 +32,10 @@ class APIClient {
         try {
             if (typeof APIFallback !== 'undefined') {
                 this.fallback = new APIFallback();
-                console.log('[品牌分析] 备用API已初始化');
+                console.log('[品牌分析-Gemini] 备用API已初始化');
             }
         } catch (error) {
-            console.warn('[品牌分析] 备用API初始化失败:', error);
+            console.warn('[品牌分析-Gemini] 备用API初始化失败:', error);
         }
     }
 
@@ -49,17 +49,17 @@ class APIClient {
                            window.location.hostname === '127.0.0.1' ||
                            window.location.protocol === 'file:';
 
-        if (isLocalhost && window.location.port === '3000') {
+        if (isLocalhost && window.location.port === '8080') {
             // 使用本地代理服务器
-            return 'http://localhost:3000/api/chat/completions';
+            return 'http://localhost:8080/api/chat/completions';
         } else {
-            // 使用DeepSeek官方API
-            return 'https://api.deepseek.com/chat/completions';
+            // 使用Gemini 2.5 Flash Lite API
+            return 'https://haxiaiplus.cn/v1/chat/completions';
         }
     }
     
     /**
-     * 调用DeepSeek API生成内容
+     * 调用Gemini 2.5 Flash Lite API生成内容
      * @param {string} prompt - 提示词
      * @param {Object} options - 可选配置
      * @returns {Promise<string>} - 生成的内容
@@ -91,11 +91,11 @@ class APIClient {
             return await this.makeRequestWithRetry(requestBody);
 
         } catch (error) {
-            console.warn('[品牌分析] API调用失败，尝试使用备用方案:', error.message);
+            console.warn('[品牌分析-Gemini] API调用失败，尝试使用备用方案:', error.message);
 
             // 如果API调用失败，使用备用方案
             if (this.fallback) {
-                console.log('[品牌分析] 使用备用API生成内容...');
+                console.log('[品牌分析-Gemini] 使用备用API生成内容...');
 
                 // 从prompt中提取表单数据（简单解析）
                 const formData = this.extractFormDataFromPrompt(prompt);
@@ -142,7 +142,7 @@ class APIClient {
                 features: featuresMatch ? featuresMatch[1].trim() : defaultData.features
             };
         } catch (error) {
-            console.warn('[品牌分析] 提取表单数据失败，使用默认数据:', error);
+            console.warn('[品牌分析-Gemini] 提取表单数据失败，使用默认数据:', error);
             return defaultData;
         }
     }
@@ -157,15 +157,15 @@ class APIClient {
         
         for (let attempt = 1; attempt <= this.retryConfig.maxRetries; attempt++) {
             try {
-                console.log(`API调用尝试 ${attempt}/${this.retryConfig.maxRetries}`);
-                
+                console.log(`[品牌分析-Gemini] API调用尝试 ${attempt}/${this.retryConfig.maxRetries}`);
+
                 const response = await this.makeRequest(requestBody);
-                console.log('API调用成功');
+                console.log('[品牌分析-Gemini] API调用成功');
                 return response;
-                
+
             } catch (error) {
                 lastError = error;
-                console.error(`API调用失败 (尝试 ${attempt}/${this.retryConfig.maxRetries}):`, error.message);
+                console.error(`[品牌分析-Gemini] API调用失败 (尝试 ${attempt}/${this.retryConfig.maxRetries}):`, error.message);
                 
                 // 如果是最后一次尝试，直接抛出错误
                 if (attempt === this.retryConfig.maxRetries) {
@@ -174,13 +174,13 @@ class APIClient {
                 
                 // 如果是客户端错误（4xx），不重试
                 if (error.status && error.status >= 400 && error.status < 500) {
-                    console.log('客户端错误，不重试');
+                    console.log('[品牌分析-Gemini] 客户端错误，不重试');
                     break;
                 }
-                
+
                 // 等待后重试
                 const delay = this.retryConfig.retryDelay * Math.pow(this.retryConfig.backoffMultiplier, attempt - 1);
-                console.log(`等待 ${delay}ms 后重试...`);
+                console.log(`[品牌分析-Gemini] 等待 ${delay}ms 后重试...`);
                 await this.sleep(delay);
             }
         }
@@ -256,7 +256,7 @@ class APIClient {
      */
     async generateContentStream(prompt, onChunk, options = {}) {
         // TODO: 实现流式输出
-        console.log('流式输出功能暂未实现，使用普通模式');
+        console.log('[品牌分析-Gemini] 流式输出功能暂未实现，使用普通模式');
         const content = await this.generateContent(prompt, options);
         onChunk(content);
     }
@@ -267,19 +267,19 @@ class APIClient {
      */
     async testConnection() {
         try {
-            console.log('测试API连接...');
-            
+            console.log('[品牌分析-Gemini] 测试API连接...');
+
             const testPrompt = '请简单回复"连接成功"';
             const response = await this.generateContent(testPrompt, {
                 max_tokens: 50,
                 temperature: 0
             });
-            
-            console.log('API连接测试成功:', response);
+
+            console.log('[品牌分析-Gemini] API连接测试成功:', response);
             return true;
             
         } catch (error) {
-            console.error('API连接测试失败:', error);
+            console.error('[品牌分析-Gemini] API连接测试失败:', error);
             return false;
         }
     }
@@ -306,7 +306,7 @@ class APIClient {
             ...this.config,
             ...newConfig
         };
-        console.log('API配置已更新:', this.config);
+        console.log('[品牌分析-Gemini] API配置已更新:', this.config);
     }
     
     /**

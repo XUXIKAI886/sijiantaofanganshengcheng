@@ -1,18 +1,37 @@
 /**
- * 商圈调研分析 - Gemini Pro API 客户端
- * 负责与Gemini Pro API的通信，支持多模态分析
+ * 商圈调研分析 - Gemini 2.5 Flash Lite API客户端
+ * 负责与Gemini 2.5 Flash Lite API的通信，支持多模态分析
  */
 
 class MarketAPIClient {
     constructor() {
-        this.config = {
-            baseURL: this.getAPIBaseURL(),
-            apiKey: 'sk-ztBf2kKzKfacgAoPm9JULo74kzbdJCV20HspAnuznvaaeEox',
-            model: 'gemini-pro',
-            temperature: 0.8,
-            max_tokens: 8192,
-            timeout: 360000 // 360秒超时，多模态分析需要更长时间
+        // API配置 - 只使用Gemini 2.5 Flash Lite
+        this.apiConfigs = {
+            'gemini-2.5-flash-lite': {
+                name: 'Gemini 2.5 Flash Lite (haxiaiplus.cn)',
+                baseURL: 'https://haxiaiplus.cn/v1/chat/completions',
+                apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
+                model: 'gemini-2.5-flash-lite-preview-06-17',
+                temperature: 0.8,
+                max_tokens: 16384, // 增加到16K tokens
+                timeout: 360000,
+                description: 'Gemini 2.5 Flash Lite模型，支持截图分析，性能稳定',
+                features: ['支持截图分析', '响应快速', '性能稳定', '多模态支持'],
+                status: 'stable',
+                icon: 'fas fa-bolt',
+                color: '#ff6b35',
+                // API能力标记
+                capabilities: {
+                    textGeneration: true,
+                    imageAnalysis: true,  // 确认支持截图分析
+                    multiModal: true      // 确认支持多模态
+                }
+            }
         };
+
+        // 使用唯一的Gemini 2.5 Flash Lite API
+        this.currentApiKey = 'gemini-2.5-flash-lite';
+        this.config = this.getCurrentConfig();
 
         this.retryConfig = {
             maxRetries: 3,
@@ -23,6 +42,41 @@ class MarketAPIClient {
         // 初始化备用API
         this.fallback = null;
         this.initFallback();
+
+        console.log(`[商圈分析] 使用API: ${this.apiConfigs[this.currentApiKey].name}`);
+    }
+
+    /**
+     * 获取当前API配置
+     * @returns {Object} - 当前API配置
+     */
+    getCurrentConfig() {
+        const apiConfig = this.apiConfigs[this.currentApiKey];
+        return {
+            baseURL: this.getAPIBaseURL(apiConfig.baseURL),
+            apiKey: apiConfig.apiKey,
+            model: apiConfig.model,
+            temperature: apiConfig.temperature,
+            max_tokens: apiConfig.max_tokens,
+            timeout: apiConfig.timeout
+        };
+    }
+
+    /**
+     * 获取API信息
+     * @returns {Object} - API信息
+     */
+    getAPIInfo() {
+        return {
+            key: this.currentApiKey,
+            name: this.apiConfigs[this.currentApiKey].name,
+            description: this.apiConfigs[this.currentApiKey].description,
+            model: this.apiConfigs[this.currentApiKey].model,
+            features: this.apiConfigs[this.currentApiKey].features,
+            status: this.apiConfigs[this.currentApiKey].status,
+            icon: this.apiConfigs[this.currentApiKey].icon,
+            color: this.apiConfigs[this.currentApiKey].color
+        };
     }
 
     /**
@@ -40,21 +94,64 @@ class MarketAPIClient {
     }
 
     /**
+     * 获取当前API信息
+     * @returns {Object} - 当前API信息
+     */
+    getCurrentAPIInfo() {
+        return {
+            key: this.currentApiKey,
+            ...this.apiConfigs[this.currentApiKey]
+        };
+    }
+
+    /**
+     * 检查当前API是否支持指定功能
+     * @param {string} capability - 功能名称 (textGeneration, imageAnalysis, multiModal)
+     * @returns {boolean} - 是否支持
+     */
+    supportsCapability(capability) {
+        const currentAPI = this.apiConfigs[this.currentApiKey];
+        return currentAPI.capabilities && currentAPI.capabilities[capability] === true;
+    }
+
+    /**
+     * 检查是否可以处理多模态请求
+     * @param {boolean} hasImage - 是否包含图片
+     * @returns {Object} - 检查结果
+     */
+    checkMultiModalSupport(hasImage) {
+        if (!hasImage) {
+            return { supported: true, reason: '纯文本请求，所有API都支持' };
+        }
+
+        if (this.supportsCapability('multiModal')) {
+            return { supported: true, reason: '当前API支持多模态请求' };
+        }
+
+        return {
+            supported: false,
+            reason: `当前API (${this.apiConfigs[this.currentApiKey].name}) 暂不支持图片分析功能`,
+            suggestion: '请切换到 Gemini Pro (annyun.cn) 进行图片分析'
+        };
+    }
+
+    /**
      * 获取API基础URL - 自动检测是否使用代理
+     * @param {string} originalURL - 原始API URL
      * @returns {string} - API基础URL
      */
-    getAPIBaseURL() {
+    getAPIBaseURL(originalURL) {
         // 检测是否在本地开发环境
         const isLocalhost = window.location.hostname === 'localhost' ||
                            window.location.hostname === '127.0.0.1' ||
                            window.location.protocol === 'file:';
 
-        if (isLocalhost && window.location.port === '3000') {
+        if (isLocalhost && window.location.port === '8080') {
             // 使用本地代理服务器
-            return 'http://localhost:3000/api/chat/completions';
+            return 'http://localhost:8080/api/chat/completions';
         } else {
-            // 使用新的Base URL
-            return 'https://api.annyun.cn/v1/chat/completions';
+            // 使用原始URL
+            return originalURL;
         }
     }
     
@@ -67,6 +164,17 @@ class MarketAPIClient {
      */
     async generateContent(prompt, options = {}, imageBase64 = null) {
         try {
+            // 检查API能力
+            const multiModalCheck = this.checkMultiModalSupport(!!imageBase64);
+            if (!multiModalCheck.supported) {
+                console.warn('[商圈分析] API能力检查失败:', multiModalCheck.reason);
+                throw new MarketAPIError(
+                    `${multiModalCheck.reason}。${multiModalCheck.suggestion || ''}`,
+                    400,
+                    { capability: 'multiModal', suggestion: multiModalCheck.suggestion }
+                );
+            }
+
             const requestConfig = {
                 ...this.config,
                 ...options
@@ -82,23 +190,43 @@ class MarketAPIClient {
 
         // 构建用户消息内容
         if (imageBase64) {
-            // 多模态请求：包含图片和文本
-            messages.push({
-                role: 'user',
-                content: [
-                    {
-                        type: 'image_url',
-                        image_url: {
-                            url: `data:image/jpeg;base64,${imageBase64}`,
-                            detail: 'high' // 高精度分析
+            // 根据不同API使用不同的多模态格式
+            if (this.currentApiKey === 'gemini-2.5-flash') {
+                // haxiaiplus.cn API 可能需要特殊格式
+                messages.push({
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: prompt
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:image/jpeg;base64,${imageBase64}`
+                            }
                         }
-                    },
-                    {
-                        type: 'text',
-                        text: prompt
-                    }
-                ]
-            });
+                    ]
+                });
+            } else {
+                // annyun.cn API 使用标准格式
+                messages.push({
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:image/jpeg;base64,${imageBase64}`,
+                                detail: 'high' // 高精度分析
+                            }
+                        },
+                        {
+                            type: 'text',
+                            text: prompt
+                        }
+                    ]
+                });
+            }
         } else {
             // 纯文本请求
             messages.push({
@@ -120,6 +248,9 @@ class MarketAPIClient {
 
             // 调试信息
             console.log('[商圈分析] API请求配置:', {
+                currentAPI: this.currentApiKey,
+                apiName: this.apiConfigs[this.currentApiKey].name,
+                baseURL: this.config.baseURL,
                 model: requestBody.model,
                 messagesCount: messages.length,
                 hasImage: !!imageBase64,
@@ -127,6 +258,15 @@ class MarketAPIClient {
                 requestBodySize: requestBodySize,
                 requestBodySizeMB: (requestBodySize / 1024 / 1024).toFixed(2)
             });
+
+            // 如果有图片，记录消息格式
+            if (imageBase64) {
+                console.log('[商圈分析] 多模态请求格式:', {
+                    messageContentType: typeof messages[1].content,
+                    contentStructure: Array.isArray(messages[1].content) ? 'array' : 'string',
+                    contentItems: Array.isArray(messages[1].content) ? messages[1].content.length : 1
+                });
+            }
 
             // 检查请求体大小
             if (requestBodySize > 10 * 1024 * 1024) { // 10MB限制
@@ -357,7 +497,16 @@ class MarketAPIClient {
             if (!content) {
                 throw new MarketAPIError('API返回数据格式异常：没有content字段');
             }
-            
+
+            // 添加响应内容调试信息
+            console.log('[商圈分析] API响应内容长度:', content.length, '字符');
+            console.log('[商圈分析] API响应预览:', content.substring(0, 200) + '...');
+            console.log('[商圈分析] API响应结尾:', '...' + content.substring(content.length - 200));
+
+            // 检查响应是否完整（查找结束标签）
+            const hasCompleteHTML = content.includes('</div>') && content.includes('综合建议');
+            console.log('[商圈分析] 响应完整性检查:', hasCompleteHTML ? '✅ 完整' : '⚠️ 可能不完整');
+
             return content;
             
         } catch (error) {

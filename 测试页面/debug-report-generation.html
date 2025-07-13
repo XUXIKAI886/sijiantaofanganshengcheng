@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报告生成调试工具</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .debug-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .debug-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .debug-section {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .debug-content {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .html-preview {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+        }
+        
+        .section-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.3rem 0;
+        }
+        
+        .check-icon {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #495057;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <div class="debug-card">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-bug text-primary me-2"></i>
+                商圈调研报告生成调试工具
+            </h1>
+            
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle me-2"></i>调试说明</h5>
+                <p>此工具用于调试商圈调研报告生成过程，检查每个步骤的输出，帮助定位报告不完整的问题。</p>
+            </div>
+            
+            <div class="mb-3">
+                <button class="btn btn-primary me-2" onclick="debugReportGeneration()">
+                    <i class="fas fa-play me-2"></i>开始调试
+                </button>
+                <button class="btn btn-success me-2" onclick="testGeminiPro()">
+                    <i class="fas fa-shield-alt me-2"></i>测试 Gemini Pro
+                </button>
+                <button class="btn btn-warning me-2" onclick="testGeminiFlashLite()">
+                    <i class="fas fa-bolt me-2"></i>测试 Gemini Flash Lite
+                </button>
+                <button class="btn btn-secondary" onclick="clearDebugInfo()">
+                    <i class="fas fa-trash me-2"></i>清空调试信息
+                </button>
+            </div>
+            
+            <!-- 指标概览 -->
+            <div class="debug-section">
+                <h5><i class="fas fa-chart-bar me-2"></i>生成指标</h5>
+                <div class="metrics-grid" id="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="response-length">-</div>
+                        <div class="metric-label">响应长度</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="sections-found">-</div>
+                        <div class="metric-label">找到章节</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="html-valid">-</div>
+                        <div class="metric-label">HTML有效</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="generation-time">-</div>
+                        <div class="metric-label">生成时间(秒)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 章节完整性检查 -->
+            <div class="debug-section">
+                <h5><i class="fas fa-list-check me-2"></i>章节完整性检查</h5>
+                <div id="section-checks">
+                    <div class="section-check">
+                        <span class="check-icon">⏳</span>
+                        <span>等待开始调试...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 原始响应 -->
+            <div class="debug-section">
+                <h5><i class="fas fa-code me-2"></i>原始AI响应</h5>
+                <div class="debug-content" id="raw-response">等待生成...</div>
+            </div>
+            
+            <!-- HTML预览 -->
+            <div class="debug-section">
+                <h5><i class="fas fa-eye me-2"></i>HTML渲染预览</h5>
+                <div class="html-preview" id="html-preview">等待生成...</div>
+            </div>
+            
+            <!-- 调试日志 -->
+            <div class="debug-section">
+                <h5><i class="fas fa-terminal me-2"></i>调试日志</h5>
+                <div class="debug-content" id="debug-log">等待开始调试...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入必要的脚本 -->
+    <script src="js/market-api-client.js"></script>
+    <script src="templates/market-prompt-template.js"></script>
+    <script src="js/market-content-generator.js"></script>
+
+    <script>
+        let apiClient;
+        let contentGenerator;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                apiClient = new MarketAPIClient();
+                contentGenerator = new MarketContentGenerator(apiClient);
+                log('✅ 调试工具初始化成功');
+            } catch (error) {
+                log('❌ 初始化失败: ' + error.message);
+            }
+        });
+        
+        // 测试数据
+        const testMarketData = {
+            areaName: '三里屯商圈',
+            location: '北京市朝阳区三里屯',
+            areaType: '商业区',
+            storeName: '测试餐厅',
+            storeType: '中式快餐',
+            targetCustomers: '白领、学生',
+            businessHours: '10:00-22:00',
+            deliveryRange: '3公里',
+            avgPrice: '25-35元'
+        };
+        
+        // 预期的章节列表
+        const expectedSections = [
+            '商圈竞争对手分析概况',
+            '数据可视化分析', 
+            '竞争对手概览',
+            '竞争对手总结',
+            '竞争对手菜品和定价策略分析',
+            '市场定位分析',
+            '优化建议',
+            '综合建议和行动计划'
+        ];
+        
+        // 调试报告生成
+        async function debugReportGeneration() {
+            log('🚀 开始调试报告生成过程...');
+            clearDebugInfo();
+            
+            try {
+                const startTime = Date.now();
+                
+                // 步骤1: 生成分析
+                log('📝 步骤1: 调用内容生成器...');
+                const result = await contentGenerator.generateAnalysis(testMarketData);
+                
+                const endTime = Date.now();
+                const duration = (endTime - startTime) / 1000;
+                
+                log('✅ 内容生成完成');
+                log(`⏱️ 生成耗时: ${duration.toFixed(2)}秒`);
+                
+                // 步骤2: 分析响应
+                const rawContent = result.content;
+                log('📊 步骤2: 分析响应内容...');
+                log(`📏 响应长度: ${rawContent.length} 字符`);
+                
+                // 显示原始响应
+                document.getElementById('raw-response').textContent = rawContent;
+                
+                // 步骤3: 检查章节完整性
+                const sectionAnalysis = analyzeSections(rawContent);
+                displaySectionChecks(sectionAnalysis);
+                
+                // 步骤4: 更新指标
+                updateMetrics({
+                    responseLength: rawContent.length,
+                    sectionsFound: sectionAnalysis.foundSections.length,
+                    htmlValid: isValidHTML(rawContent),
+                    generationTime: duration
+                });
+                
+                // 步骤5: HTML预览
+                document.getElementById('html-preview').innerHTML = rawContent;
+                
+                log('🎉 调试完成！');
+                
+            } catch (error) {
+                log('❌ 调试失败: ' + error.message);
+                console.error('调试错误:', error);
+            }
+        }
+        
+        // 测试特定模型
+        async function testGeminiPro() {
+            apiClient.switchAPI('gemini-pro');
+            log('🔄 切换到 Gemini Pro');
+            await debugReportGeneration();
+        }
+        
+        async function testGeminiFlashLite() {
+            apiClient.switchAPI('gemini-2.5-flash-lite');
+            log('🔄 切换到 Gemini 2.5 Flash Lite');
+            await debugReportGeneration();
+        }
+        
+        // 分析章节完整性
+        function analyzeSections(content) {
+            const foundSections = [];
+            const missingSections = [];
+            
+            expectedSections.forEach(section => {
+                if (content.includes(section)) {
+                    foundSections.push(section);
+                } else {
+                    missingSections.push(section);
+                }
+            });
+            
+            return {
+                foundSections,
+                missingSections,
+                completeness: `${foundSections.length}/${expectedSections.length}`
+            };
+        }
+        
+        // 显示章节检查结果
+        function displaySectionChecks(analysis) {
+            const container = document.getElementById('section-checks');
+            container.innerHTML = '';
+            
+            expectedSections.forEach(section => {
+                const div = document.createElement('div');
+                div.className = 'section-check';
+                
+                const isFound = analysis.foundSections.includes(section);
+                const icon = isFound ? '✅' : '❌';
+                const status = isFound ? 'text-success' : 'text-danger';
+                
+                div.innerHTML = `
+                    <span class="check-icon">${icon}</span>
+                    <span class="${status}">${section}</span>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+        
+        // 检查HTML有效性
+        function isValidHTML(content) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(content, 'text/html');
+                const errors = doc.querySelectorAll('parsererror');
+                return errors.length === 0;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        // 更新指标
+        function updateMetrics(metrics) {
+            document.getElementById('response-length').textContent = metrics.responseLength.toLocaleString();
+            document.getElementById('sections-found').textContent = metrics.sectionsFound;
+            document.getElementById('html-valid').textContent = metrics.htmlValid ? '✅' : '❌';
+            document.getElementById('generation-time').textContent = metrics.generationTime.toFixed(2);
+        }
+        
+        // 清空调试信息
+        function clearDebugInfo() {
+            document.getElementById('raw-response').textContent = '等待生成...';
+            document.getElementById('html-preview').innerHTML = '等待生成...';
+            document.getElementById('section-checks').innerHTML = '<div class="section-check"><span class="check-icon">⏳</span><span>等待开始调试...</span></div>';
+            updateMetrics({
+                responseLength: '-',
+                sectionsFound: '-', 
+                htmlValid: '-',
+                generationTime: '-'
+            });
+        }
+        
+        // 日志函数
+        function log(message) {
+            const logArea = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            
+            if (logArea.textContent === '等待开始调试...') {
+                logArea.textContent = logEntry;
+            } else {
+                logArea.textContent += '\n' + logEntry;
+            }
+            
+            logArea.scrollTop = logArea.scrollHeight;
+            console.log(message);
+        }
+    </script>
+    
+    <!-- Bootstrap 5 JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

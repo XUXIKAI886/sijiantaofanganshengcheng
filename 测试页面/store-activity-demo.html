@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店铺活动方案功能演示</title>
+    
+    <!-- Tailwind CSS + DaisyUI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .demo-section {
+            margin-bottom: 2rem;
+        }
+        .demo-result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-magic text-orange-500 mr-3"></i>
+                店铺活动方案功能演示
+            </h1>
+            <p class="text-lg text-gray-600">展示新增的店铺活动方案生成模块的核心功能</p>
+        </div>
+
+        <!-- 演示1: 模块加载状态 -->
+        <div class="demo-section">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">
+                        <i class="fas fa-cogs text-blue-500 mr-2"></i>
+                        模块加载状态检查
+                    </h2>
+                    <button id="check-modules" class="btn btn-primary">
+                        <i class="fas fa-play mr-2"></i>
+                        检查模块状态
+                    </button>
+                    <div id="module-status" class="demo-result hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 演示2: API客户端配置 -->
+        <div class="demo-section">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">
+                        <i class="fas fa-server text-green-500 mr-2"></i>
+                        API客户端配置演示
+                    </h2>
+                    <button id="demo-api-config" class="btn btn-success">
+                        <i class="fas fa-play mr-2"></i>
+                        显示API配置
+                    </button>
+                    <div id="api-config-result" class="demo-result hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 演示3: 表单验证功能 -->
+        <div class="demo-section">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">
+                        <i class="fas fa-check-circle text-purple-500 mr-2"></i>
+                        表单验证功能演示
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="text" id="demo-store-name" placeholder="店铺名称" class="input input-bordered" />
+                        <input type="text" id="demo-store-address" placeholder="店铺地址" class="input input-bordered" />
+                    </div>
+                    <textarea id="demo-menu-items" placeholder="菜品信息（每行一个）" class="textarea textarea-bordered w-full mb-4" rows="4"></textarea>
+                    <button id="demo-validation" class="btn btn-secondary">
+                        <i class="fas fa-play mr-2"></i>
+                        测试表单验证
+                    </button>
+                    <div id="validation-result" class="demo-result hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 演示4: 提示词模板生成 -->
+        <div class="demo-section">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">
+                        <i class="fas fa-file-alt text-orange-500 mr-2"></i>
+                        提示词模板生成演示
+                    </h2>
+                    <button id="demo-prompt-template" class="btn btn-warning">
+                        <i class="fas fa-play mr-2"></i>
+                        生成提示词模板
+                    </button>
+                    <div id="prompt-template-result" class="demo-result hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 演示5: 报告渲染预览 -->
+        <div class="demo-section">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-2xl mb-4">
+                        <i class="fas fa-eye text-red-500 mr-2"></i>
+                        报告渲染预览
+                    </h2>
+                    <button id="demo-report-render" class="btn btn-error">
+                        <i class="fas fa-play mr-2"></i>
+                        预览报告渲染
+                    </button>
+                    <div id="report-render-result" class="demo-result hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 返回按钮 -->
+        <div class="text-center mt-8">
+            <a href="../index.html" class="btn btn-outline btn-lg mr-4">
+                <i class="fas fa-arrow-left mr-2"></i>
+                返回主页
+            </a>
+            <a href="../store-activity.html" class="btn btn-primary btn-lg">
+                <i class="fas fa-external-link-alt mr-2"></i>
+                访问店铺活动页面
+            </a>
+        </div>
+    </div>
+
+    <!-- 加载JavaScript模块 -->
+    <script src="../js/store-activity-app.js"></script>
+    <script src="../js/store-activity-api-client.js"></script>
+    <script src="../js/store-activity-form-handler.js"></script>
+    <script src="../js/store-activity-content-generator.js"></script>
+    <script src="../js/store-activity-report-renderer.js"></script>
+    <script src="../templates/store-activity-prompt-template.js"></script>
+
+    <script>
+        // 演示1: 检查模块状态
+        document.getElementById('check-modules').addEventListener('click', function() {
+            const result = document.getElementById('module-status');
+            result.classList.remove('hidden');
+            
+            const modules = [
+                'StoreActivityApp',
+                'StoreActivityAPIClient',
+                'StoreActivityFormHandler',
+                'StoreActivityContentGenerator',
+                'StoreActivityReportRenderer',
+                'StoreActivityPromptTemplate'
+            ];
+            
+            let output = '模块加载状态检查:\n\n';
+            
+            modules.forEach(moduleName => {
+                const exists = typeof window[moduleName] !== 'undefined';
+                output += `${exists ? '✅' : '❌'} ${moduleName}: ${exists ? '已加载' : '未找到'}\n`;
+            });
+            
+            result.textContent = output;
+        });
+
+        // 演示2: API客户端配置
+        document.getElementById('demo-api-config').addEventListener('click', function() {
+            const result = document.getElementById('api-config-result');
+            result.classList.remove('hidden');
+            
+            try {
+                const apiClient = new StoreActivityAPIClient();
+                const availableAPIs = apiClient.getAvailableAPIs();
+                const currentAPI = apiClient.getCurrentAPIInfo();
+                
+                let output = 'API客户端配置信息:\n\n';
+                output += `当前API: ${currentAPI.name}\n`;
+                output += `模型: ${currentAPI.model}\n`;
+                output += `基础URL: ${currentAPI.baseURL}\n\n`;
+                output += '可用API列表:\n';
+                
+                availableAPIs.forEach(api => {
+                    output += `- ${api.name} (${api.key})\n`;
+                    output += `  模型: ${api.model}\n`;
+                    output += `  状态: ${api.status}\n`;
+                    output += `  特性: ${api.features.join(', ')}\n\n`;
+                });
+                
+                result.textContent = output;
+            } catch (error) {
+                result.textContent = `错误: ${error.message}`;
+            }
+        });
+
+        // 演示3: 表单验证功能
+        document.getElementById('demo-validation').addEventListener('click', function() {
+            const result = document.getElementById('validation-result');
+            result.classList.remove('hidden');
+            
+            try {
+                // 模拟表单数据
+                const testData = {
+                    storeName: document.getElementById('demo-store-name').value || '测试火锅店',
+                    storeAddress: document.getElementById('demo-store-address').value || '北京市朝阳区测试街道123号',
+                    businessCategory: '火锅',
+                    businessHours: '10:00-22:00',
+                    menuItems: document.getElementById('demo-menu-items').value || '麻辣牛肉火锅 68元\n番茄鱼片火锅 58元\n招牌毛肚 28元\n精品鸭血 18元\n手工丸子拼盘 32元'
+                };
+                
+                let output = '表单验证结果:\n\n';
+                
+                // 验证店铺名称
+                const nameValid = testData.storeName && testData.storeName.length >= 2;
+                output += `店铺名称: ${nameValid ? '✅ 通过' : '❌ 失败'} (${testData.storeName})\n`;
+                
+                // 验证地址
+                const addressValid = testData.storeAddress && testData.storeAddress.length >= 5;
+                output += `店铺地址: ${addressValid ? '✅ 通过' : '❌ 失败'} (${testData.storeAddress})\n`;
+                
+                // 验证营业时间
+                const timePattern = /\d{1,2}:\d{2}.*\d{1,2}:\d{2}/;
+                const timeValid = timePattern.test(testData.businessHours);
+                output += `营业时间: ${timeValid ? '✅ 通过' : '❌ 失败'} (${testData.businessHours})\n`;
+                
+                // 验证菜品
+                const menuLines = testData.menuItems.split('\n').filter(line => line.trim());
+                const menuValid = menuLines.length >= 5;
+                output += `菜品信息: ${menuValid ? '✅ 通过' : '❌ 失败'} (${menuLines.length}个菜品)\n`;
+                
+                result.textContent = output;
+            } catch (error) {
+                result.textContent = `错误: ${error.message}`;
+            }
+        });
+
+        // 演示4: 提示词模板生成
+        document.getElementById('demo-prompt-template').addEventListener('click', function() {
+            const result = document.getElementById('prompt-template-result');
+            result.classList.remove('hidden');
+            
+            try {
+                const template = StoreActivityPromptTemplate.getMainPrompt();
+                const sampleData = {
+                    storeName: '九格热浪火锅',
+                    storeAddress: '北京市朝阳区三里屯街道',
+                    businessCategory: '火锅',
+                    businessHours: '10:00-22:00',
+                    menuItems: '麻辣牛肉火锅 68元\n番茄鱼片火锅 58元\n招牌毛肚 28元'
+                };
+                
+                let filledTemplate = template
+                    .replace(/\{storeName\}/g, sampleData.storeName)
+                    .replace(/\{storeAddress\}/g, sampleData.storeAddress)
+                    .replace(/\{businessCategory\}/g, sampleData.businessCategory)
+                    .replace(/\{businessHours\}/g, sampleData.businessHours)
+                    .replace(/\{menuItems\}/g, sampleData.menuItems);
+                
+                result.textContent = filledTemplate.substring(0, 1000) + '\n\n... (已截取前1000字符)';
+            } catch (error) {
+                result.textContent = `错误: ${error.message}`;
+            }
+        });
+
+        // 演示5: 报告渲染预览
+        document.getElementById('demo-report-render').addEventListener('click', function() {
+            const result = document.getElementById('report-render-result');
+            result.classList.remove('hidden');
+            
+            try {
+                const renderer = new StoreActivityReportRenderer();
+                
+                // 模拟报告数据
+                const mockReportData = {
+                    success: true,
+                    content: `
+                        <h3>满减活动</h3>
+                        <p>满50减5元，满100减12元，满150减20元</p>
+                        <h3>减配送费活动</h3>
+                        <p>满30元减配送费3元</p>
+                        <h3>下单返券活动</h3>
+                        <p>下单满80元返10元券，有效期7天</p>
+                        <h3>单品套餐搭配</h3>
+                        <ul>
+                            <li>套餐一: 麻辣牛肉火锅 + 精品鸭血 - 35元</li>
+                            <li>套餐二: 番茄鱼片火锅 + 手工丸子 - 32元</li>
+                        </ul>
+                    `,
+                    metadata: {
+                        model: 'gemini-2.5-flash-lite',
+                        api: 'Gemini 2.5 Flash Lite',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                const mockStoreData = {
+                    storeName: '九格热浪火锅',
+                    storeAddress: '北京市朝阳区三里屯街道',
+                    businessCategory: '火锅',
+                    businessHours: '10:00-22:00',
+                    menuItems: [
+                        { name: '麻辣牛肉火锅', price: 68 },
+                        { name: '番茄鱼片火锅', price: 58 }
+                    ]
+                };
+                
+                let output = '报告渲染预览:\n\n';
+                output += `店铺名称: ${mockStoreData.storeName}\n`;
+                output += `生成时间: ${new Date(mockReportData.metadata.timestamp).toLocaleString('zh-CN')}\n`;
+                output += `使用模型: ${mockReportData.metadata.model}\n\n`;
+                output += '生成的活动方案内容:\n';
+                output += mockReportData.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+                
+                result.textContent = output;
+            } catch (error) {
+                result.textContent = `错误: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

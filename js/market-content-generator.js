@@ -48,11 +48,13 @@ class MarketContentGenerator {
             // 调用API生成内容
             const rawContent = await this.apiClient.generateContent(prompt, {
                 temperature: 0.7,
-                max_tokens: 4096
+                max_tokens: 16384 // 使用更大的token限制确保完整生成
             });
             
             console.log('[商圈分析] AI响应长度:', rawContent.length);
-            
+            console.log('[商圈分析] AI响应预览:', rawContent.substring(0, 300) + '...');
+            console.log('[商圈分析] AI响应结尾:', '...' + rawContent.substring(rawContent.length - 300));
+
             // 解析响应
             const parseResult = MarketPromptTemplate.parseResponse(rawContent);
             if (!parseResult.success) {
@@ -323,10 +325,12 @@ class MarketContentGenerator {
             // 调用API生成内容（多模态）
             const rawContent = await this.apiClient.generateContent(prompt, {
                 temperature: 0.7,
-                max_tokens: 4096 // API限制最大4096 tokens
+                max_tokens: 16384 // 使用更大的token限制确保完整生成
             }, imageBase64);
 
             console.log('[商圈分析] 截图分析AI响应长度:', rawContent.length);
+            console.log('[商圈分析] 截图分析AI响应预览:', rawContent.substring(0, 300) + '...');
+            console.log('[商圈分析] 截图分析AI响应结尾:', '...' + rawContent.substring(rawContent.length - 300));
 
             // 解析响应
             const parseResult = MarketPromptTemplate.parseResponse(rawContent);

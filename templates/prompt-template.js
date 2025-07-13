@@ -16,8 +16,7 @@ class PromptTemplate {
             address,
             targetGroup,
             priceRange,
-            mainProducts,
-            features
+            mainProducts
         } = storeData;
         
         return `# 角色设定
@@ -30,7 +29,6 @@ class PromptTemplate {
 - **目标客群**：${targetGroup || '未指定'}
 - **价格区间**：人均${priceRange || '未指定'}元
 - **主营产品**：${mainProducts || '未提供'}
-- **经营特色**：${features || '未提供'}
 
 ## 专业分析要求
 请基于以上信息，进行深度的8维度品牌定位分析。每个维度需要包含：

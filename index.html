@@ -95,9 +95,9 @@
         /* 功能卡片样式 */
         .feature-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 3rem;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2.5rem;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -140,6 +140,10 @@
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         }
 
+        .card-badge.new {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+        }
+
         /* 新的图标样式 */
         .feature-icon-new {
             width: 80px;
@@ -156,6 +160,11 @@
         .feature-icon-new.purple {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .feature-icon-new.orange {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
         }
 
         .feature-icon-new i {
@@ -232,6 +241,10 @@
             background: #3b82f6;
         }
 
+        .highlight-icon.orange {
+            background: #f97316;
+        }
+
         .highlight-icon i {
             font-size: 0.7rem;
             color: white;
@@ -289,6 +302,11 @@
         .feature-button-new.market-button {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .feature-button-new.activity-button {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
         }
 
         .feature-button-new:hover {
@@ -355,7 +373,7 @@
         <header class="app-header">
             <div class="container">
                 <h1 class="app-title">外卖店铺四件套方案生成</h1>
-                <p class="app-subtitle">基于AI智能分析，提供品牌定位分析和商圈调研分析服务</p>
+                <p class="app-subtitle">基于AI智能分析，提供品牌定位分析、商圈调研分析和店铺活动方案生成服务</p>
             </div>
         </header>
 
@@ -409,6 +427,28 @@
                             <i class="fas fa-map-marker-alt me-2"></i>开始商圈调研
                         </a>
                     </div>
+
+                    <!-- 店铺活动方案卡片 -->
+                    <div class="feature-card fade-in activity-card">
+                        <div class="card-badge new">新功能</div>
+                        <div class="feature-icon-new orange">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3 class="feature-title">店铺活动方案</h3>
+                        <p class="feature-description">
+                            智能生成美团外卖店铺活动方案，包括满减活动、配送费优惠、返券活动和套餐搭配设计
+                        </p>
+                        <ul class="feature-highlights-new">
+                            <li><span class="highlight-icon orange"><i class="fas fa-check"></i></span>满减活动智能设计</li>
+                            <li><span class="highlight-icon orange"><i class="fas fa-check"></i></span>配送费优惠策略</li>
+                            <li><span class="highlight-icon orange"><i class="fas fa-check"></i></span>返券活动规划</li>
+                            <li><span class="highlight-icon orange"><i class="fas fa-check"></i></span>8+套餐搭配方案</li>
+                            <li><span class="highlight-icon orange"><i class="fas fa-check"></i></span>DaisyUI现代界面</li>
+                        </ul>
+                        <a href="store-activity.html" class="feature-button-new activity-button" target="_blank">
+                            <i class="fas fa-magic me-2"></i>生成活动方案
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>
@@ -416,7 +456,7 @@
         <!-- 页脚 -->
         <footer class="app-footer">
             <div class="container">
-                <p>&copy; 2025 呈尚策划 - 基于Gemini Pro AI技术 | 双模块独立运行架构</p>
+                <p>&copy; 2025 呈尚策划 - 基于Gemini Pro AI技术 | 三模块独立运行架构</p>
             </div>
         </footer>
     </div>
