@@ -1902,16 +1902,15 @@
         // 文件上传功能已移至 MarketFormHandler 类中统一管理
         // 避免重复事件监听器导致的双重弹窗问题
 
-            // 添加输入框焦点效果
-            const inputs = document.querySelectorAll('.form-control, .form-select');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.classList.add('shadow-sm');
-                });
+        // 添加输入框焦点效果
+        const inputs = document.querySelectorAll('.form-control, .form-select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('shadow-sm');
+            });
 
-                input.addEventListener('blur', function() {
-                    this.parentElement.classList.remove('shadow-sm');
-                });
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('shadow-sm');
             });
         });
 
