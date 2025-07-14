@@ -34,21 +34,57 @@ class ChartGenerator {
         try {
             // 检查是否已加载Chart.js
             if (typeof Chart === 'undefined') {
-                console.log('[图表生成器] 开始加载 Chart.js...');
-                await this.loadScript('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js');
+                console.log('[图表生成器] Chart.js 未检测到，等待加载...');
 
-                // 再次检查是否加载成功
+                // 等待Chart.js加载，最多等待10秒
+                const maxWaitTime = 10000; // 10秒
+                const checkInterval = 100; // 100毫秒检查一次
+                let waitTime = 0;
+
+                while (typeof Chart === 'undefined' && waitTime < maxWaitTime) {
+                    await new Promise(resolve => setTimeout(resolve, checkInterval));
+                    waitTime += checkInterval;
+                }
+
                 if (typeof Chart !== 'undefined') {
                     console.log('[图表生成器] Chart.js 加载成功');
                 } else {
-                    console.error('[图表生成器] Chart.js 加载失败 - Chart 对象未定义');
+                    console.error('[图表生成器] Chart.js 加载超时，尝试备用加载方案');
+                    await this.loadChartWithFallback();
                 }
             } else {
                 console.log('[图表生成器] Chart.js 已存在，跳过加载');
             }
         } catch (error) {
             console.error('[图表生成器] 图表库加载失败:', error);
+            await this.loadChartWithFallback();
         }
+    }
+
+    /**
+     * 备用Chart.js加载方案
+     */
+    async loadChartWithFallback() {
+        const fallbackCDNs = [
+            'https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js'
+        ];
+
+        for (const cdn of fallbackCDNs) {
+            try {
+                console.log(`[图表生成器] 尝试从备用CDN加载: ${cdn}`);
+                await this.loadScript(cdn);
+
+                if (typeof Chart !== 'undefined') {
+                    console.log(`[图表生成器] 从备用CDN加载成功: ${cdn}`);
+                    return;
+                }
+            } catch (error) {
+                console.warn(`[图表生成器] 备用CDN加载失败: ${cdn}`, error);
+            }
+        }
+
+        console.error('[图表生成器] 所有CDN都加载失败，将使用文本显示替代图表');
     }
 
     /**
@@ -181,12 +217,33 @@ class ChartGenerator {
     createChartContainer(title, index) {
         const container = document.createElement('div');
         container.className = 'market-chart-container';
+        container.style.cssText = `
+            background: #f9fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        `;
+
         container.innerHTML = `
-            <div class="market-chart-header">
-                <h4 class="market-chart-title">${title || `图表 ${index + 1}`}</h4>
+            <div class="market-chart-header" style="margin-bottom: 15px;">
+                <h4 class="market-chart-title" style="
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #374151;
+                    text-align: center;
+                ">${title || `图表 ${index + 1}`}</h4>
             </div>
-            <div class="market-chart-body">
-                <canvas id="chart-${index}" width="400" height="300"></canvas>
+            <div class="market-chart-body" style="
+                position: relative;
+                height: 300px;
+                width: 100%;
+            ">
+                <canvas id="chart-${index}-${Date.now()}" style="
+                    max-width: 100%;
+                    max-height: 100%;
+                "></canvas>
             </div>
         `;
         return container;
@@ -202,12 +259,26 @@ class ChartGenerator {
      */
     createChart(canvas, type, data, title, options = {}) {
         if (typeof Chart === 'undefined') {
-            console.error('[图表生成器] Chart.js 未加载');
-            return;
+            console.error('[图表生成器] Chart.js 未加载，使用文本替代方案');
+            this.createTextFallback(canvas, type, data, title);
+            return null;
+        }
+
+        // 确保canvas有正确的尺寸
+        const container = canvas.parentElement;
+        if (container) {
+            const containerRect = container.getBoundingClientRect();
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
         }
 
         const ctx = canvas.getContext('2d');
         const chartConfig = this.getChartConfig(type, data, title);
+
+        // 强制设置稳定的配置
+        chartConfig.options.responsive = true;
+        chartConfig.options.maintainAspectRatio = true;
+        chartConfig.options.aspectRatio = 1.5;
 
         // 应用额外配置选项
         if (options.responsive !== undefined) {
@@ -216,16 +287,131 @@ class ChartGenerator {
         if (options.maintainAspectRatio !== undefined) {
             chartConfig.options.maintainAspectRatio = options.maintainAspectRatio;
         }
+        if (options.aspectRatio !== undefined) {
+            chartConfig.options.aspectRatio = options.aspectRatio;
+        }
 
         try {
+            // 销毁可能存在的旧图表
+            if (this.chartInstances.has(canvas.id)) {
+                this.chartInstances.get(canvas.id).destroy();
+                this.chartInstances.delete(canvas.id);
+            }
+
             const chart = new Chart(ctx, chartConfig);
             this.chartInstances.set(canvas.id, chart);
             console.log(`[图表生成器] ${type} 图表创建成功:`, title);
             return chart;
         } catch (error) {
             console.error('[图表生成器] 图表创建失败:', error);
+            this.createTextFallback(canvas, type, data, title);
             return null;
         }
+    }
+
+    /**
+     * 创建文本替代方案
+     * @param {HTMLCanvasElement} canvas - 画布元素
+     * @param {string} type - 图表类型
+     * @param {Array} data - 图表数据
+     * @param {string} title - 图表标题
+     */
+    createTextFallback(canvas, type, data, title) {
+        const container = canvas.parentElement;
+        const fallbackHTML = `
+            <div class="chart-fallback" style="
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                border: 2px dashed #cbd5e0;
+                border-radius: 8px;
+                padding: 20px;
+                text-align: center;
+                min-height: 300px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            ">
+                <div style="
+                    background: #3182ce;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                ">${title}</div>
+
+                <div style="
+                    background: white;
+                    border-radius: 6px;
+                    padding: 15px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    max-width: 300px;
+                    width: 100%;
+                ">
+                    <div style="
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: #2d3748;
+                        margin-bottom: 10px;
+                    ">数据概览 (${this.getChartTypeText(type)})</div>
+
+                    <div style="
+                        font-size: 14px;
+                        color: #4a5568;
+                        line-height: 1.5;
+                    ">
+                        ${this.formatDataForText(data)}
+                    </div>
+                </div>
+
+                <div style="
+                    margin-top: 15px;
+                    font-size: 12px;
+                    color: #718096;
+                    font-style: italic;
+                ">
+                    <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
+                    图表库加载失败，显示文本数据
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = fallbackHTML;
+        console.log(`[图表生成器] 为 ${title} 创建了文本替代方案`);
+    }
+
+    /**
+     * 获取图表类型文本
+     * @param {string} type - 图表类型
+     * @returns {string} - 图表类型文本
+     */
+    getChartTypeText(type) {
+        const typeMap = {
+            'bar': '柱状图',
+            'pie': '饼图',
+            'doughnut': '环形图',
+            'radar': '雷达图',
+            'line': '折线图'
+        };
+        return typeMap[type] || type;
+    }
+
+    /**
+     * 格式化数据为文本显示
+     * @param {Array} data - 图表数据
+     * @returns {string} - 格式化的文本
+     */
+    formatDataForText(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            return '暂无数据';
+        }
+
+        return data.slice(0, 5).map((item, index) => {
+            const name = item.name || item.label || `项目${index + 1}`;
+            const value = item.value || item.y || item.data || 0;
+            return `• ${name}: ${value}`;
+        }).join('<br>') + (data.length > 5 ? '<br>...' : '');
     }
 
     /**
@@ -238,7 +424,8 @@ class ChartGenerator {
     getChartConfig(type, data, title) {
         const baseConfig = {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5, // 固定宽高比
             plugins: {
                 title: {
                     display: true,
@@ -249,6 +436,14 @@ class ChartGenerator {
                 legend: {
                     display: true,
                     position: 'bottom'
+                }
+            },
+            layout: {
+                padding: {
+                    top: 10,
+                    bottom: 10,
+                    left: 10,
+                    right: 10
                 }
             }
         };

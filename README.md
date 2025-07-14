@@ -2,7 +2,7 @@
 
 > 基于AI技术的智能分析平台，提供品牌定位分析和商圈调研分析服务，为餐饮行业提供专业的商业决策支持
 
-[![版本](https://img.shields.io/badge/版本-v3.1.0-blue)](https://github.com/XUXIKAI886/sijiantaofangan)
+[![版本](https://img.shields.io/badge/版本-v3.1.1-blue)](https://github.com/XUXIKAI886/sijiantaofanganshengcheng)
 [![项目状态](https://img.shields.io/badge/状态-生产就绪-brightgreen)](https://github.com/XUXIKAI886/sijiantaofangan)
 [![技术栈](https://img.shields.io/badge/技术栈-HTML5%20%7C%20CSS3%20%7C%20JavaScript%20%7C%20DaisyUI-blue)](https://github.com/XUXIKAI886/sijiantaofangan)
 [![AI集成](https://img.shields.io/badge/AI-Gemini%20Pro%20%2B%20Gemini%202.5%20Flash%20Lite-orange)](https://github.com/XUXIKAI886/sijiantaofangan)
@@ -27,6 +27,8 @@
 - **竞争对手表格**：7列美团风格专业数据展示
 - **现代化UI**：紫蓝渐变玻璃态设计，美观大气
 - **投资决策**：为商业投资提供专业的决策支持
+- **图表稳定性**：修复Chart.js加载问题，支持多CDN备用方案和文本替代
+- **高度控制**：解决图表高度无限增长问题，确保布局稳定
 
 ### 🏪 店铺活动方案生成模块
 - **智能活动设计**：AI生成满减活动、配送费优惠、返券活动方案
@@ -36,6 +38,7 @@
 - **纯文字设计**：移除所有emoji图标，采用商务专业的纯文字标题
 - **活动卡片美化**：不同活动类型使用专属颜色主题和FontAwesome图标
 - **美团专业**：专门针对美团外卖平台的活动策略优化
+- **排版优化**：修复补充说明板块文字排版，采用逐行解析确保格式正确
 
 ### 🎨 三模块独立架构
 - **完全独立**：三个模块互不干扰，可同时使用
@@ -605,6 +608,37 @@ npm run test:integration
 # 生成测试覆盖率报告
 npm run test:coverage
 ```
+
+## 📝 更新日志
+
+### v3.1.1 (2025-01-14)
+
+#### 🔧 Bug修复
+- **店铺活动模块**：修复补充说明板块文字排版混乱问题
+  - 重写formatSuggestions方法，采用逐行解析方式
+  - 改进HTML结构生成，正确处理小标题和列表项
+  - 统一提示词模板格式，确保AI生成内容规范
+
+- **商圈调研模块**：解决Chart.js加载和图表显示问题
+  - 实现多CDN备用加载方案（jsdelivr + unpkg + cdnjs）
+  - 添加智能等待机制，最多等待10秒
+  - 提供文本替代方案，确保功能在任何环境下可用
+  - 修复图表高度无限增长问题，确保布局稳定
+
+#### 🧪 测试工具
+- 新增补充说明格式化测试页面
+- 新增Chart.js加载和图表生成测试页面
+- 添加CDN网络环境测试功能
+
+#### 📚 文档更新
+- 新增Chart.js加载问题修复文档
+- 新增图表高度修复技术文档
+- 完善README功能说明
+
+### v3.1.0 (2025-01-13)
+- 三模块完整架构发布
+- 店铺活动方案生成模块上线
+- 多项UI/UX优化
 
 ---
 
