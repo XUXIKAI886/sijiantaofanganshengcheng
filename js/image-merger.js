@@ -89,17 +89,32 @@ class ImageMerger {
     setupFileUploadListeners() {
         const uploadArea = document.getElementById('uploadArea');
         const imageInput = document.getElementById('imageInput');
+        const selectBtn = document.getElementById('selectImagesBtn');
 
         if (!uploadArea || !imageInput) return;
 
-        // 点击上传区域
-        uploadArea.addEventListener('click', () => {
+        // 只给选择按钮绑定点击事件，避免重复触发
+        if (selectBtn) {
+            selectBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // 阻止事件冒泡
+                imageInput.click();
+            });
+        }
+
+        // 给上传区域绑定点击事件，但排除按钮区域
+        uploadArea.addEventListener('click', (e) => {
+            // 如果点击的是按钮或按钮内的元素，不触发
+            if (e.target.closest('#selectImagesBtn')) {
+                return;
+            }
             imageInput.click();
         });
 
         // 文件选择
         imageInput.addEventListener('change', (e) => {
             this.handleFileSelect(e.target.files);
+            // 清空input值，允许重复选择同一文件
+            e.target.value = '';
         });
 
         // 拖拽上传
@@ -282,12 +297,21 @@ class ImageMerger {
                 <i class="fas fa-images empty-icon"></i>
                 <h5>暂无图片</h5>
                 <p class="mb-3">请使用上方的上传区域添加图片</p>
-                <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                <button class="btn btn-primary" id="emptyStateSelectBtn">
                     <i class="fas fa-plus me-2"></i>
                     选择图片
                 </button>
             </div>
         `;
+
+        // 为空状态按钮绑定事件
+        const emptyBtn = document.getElementById('emptyStateSelectBtn');
+        if (emptyBtn) {
+            emptyBtn.addEventListener('click', () => {
+                const imageInput = document.getElementById('imageInput');
+                if (imageInput) imageInput.click();
+            });
+        }
     }
     
     /**
@@ -679,5 +703,4 @@ document.addEventListener('DOMContentLoaded', function() {
     window.generatePreview = () => imageMerger.generatePreview();
     window.downloadMergedImage = () => imageMerger.downloadMergedImage();
     window.goBackToMarketResearch = () => imageMerger.goBackToMarketResearch();
-    window.selectImages = () => document.getElementById('imageInput').click();
 });

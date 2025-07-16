@@ -2,9 +2,9 @@
 
 > 基于AI技术的智能分析平台，提供品牌定位分析和商圈调研分析服务，为餐饮行业提供专业的商业决策支持
 
-[![版本](https://img.shields.io/badge/版本-v3.1.1-blue)](https://github.com/XUXIKAI886/sijiantaofanganshengcheng)
+[![版本](https://img.shields.io/badge/版本-v3.2.0-blue)](https://github.com/XUXIKAI886/sijiantaofanganshengcheng)
 [![项目状态](https://img.shields.io/badge/状态-生产就绪-brightgreen)](https://github.com/XUXIKAI886/sijiantaofangan)
-[![技术栈](https://img.shields.io/badge/技术栈-HTML5%20%7C%20CSS3%20%7C%20JavaScript%20%7C%20DaisyUI-blue)](https://github.com/XUXIKAI886/sijiantaofangan)
+[![技术栈](https://img.shields.io/badge/技术栈-HTML5%20%7C%20CSS3%20%7C%20JavaScript%20%7C%20Canvas%20API%20%7C%20DaisyUI-blue)](https://github.com/XUXIKAI886/sijiantaofangan)
 [![AI集成](https://img.shields.io/badge/AI-Gemini%20Pro%20%2B%20Gemini%202.5%20Flash%20Lite-orange)](https://github.com/XUXIKAI886/sijiantaofangan)
 [![三模块](https://img.shields.io/badge/架构-三模块独立-purple)](https://github.com/XUXIKAI886/sijiantaofangan)
 
@@ -29,6 +29,7 @@
 - **投资决策**：为商业投资提供专业的决策支持
 - **图表稳定性**：修复Chart.js加载问题，支持多CDN备用方案和文本替代
 - **高度控制**：解决图表高度无限增长问题，确保布局稳定
+- **🖼️ 图片拼接工具**：独立的图片拼接功能，支持多张竞争对手截图的智能拼接
 
 ### 🏪 店铺活动方案生成模块
 - **智能活动设计**：AI生成满减活动、配送费优惠、返券活动方案
@@ -39,6 +40,26 @@
 - **活动卡片美化**：不同活动类型使用专属颜色主题和FontAwesome图标
 - **美团专业**：专门针对美团外卖平台的活动策略优化
 - **排版优化**：修复补充说明板块文字排版，采用逐行解析确保格式正确
+
+### 🖼️ 图片拼接工具（新增功能）
+- **独立页面**：专门的图片拼接工具页面 (`image-merger.html`)
+- **多种上传方式**：支持点击选择、拖拽上传多张图片
+- **智能拼接算法**：基于Canvas API的高质量图片拼接
+- **灵活设置**：
+  - 拼接方向：纵向（上下排列）、横向（左右排列）
+  - 图片对齐：居中、左对齐、右对齐
+  - 间距调节：0-50像素自定义间距
+- **图片管理**：支持图片排序、删除、预览功能
+- **实时预览**：设置变化时自动更新拼接效果
+- **高质量下载**：PNG格式无损下载，保持图片质量
+- **用户体验优化**：
+  - 现代化UI设计，与平台风格一致
+  - 拖拽交互支持，操作直观便捷
+  - 智能错误提示和状态指示
+  - 本地处理保护隐私，不上传服务器
+- **快捷操作**：支持键盘快捷键（Ctrl+S下载，Ctrl+R刷新预览）
+- **兼容性强**：支持JPG、PNG、WEBP等常见图片格式
+- **性能优化**：异步处理、内存管理、高质量渲染
 
 ### 🎨 三模块独立架构
 - **完全独立**：三个模块互不干扰，可同时使用
@@ -88,8 +109,9 @@ node proxy-server.js
   - 商圈调研：Gemini 2.5 Flash Lite API (haxiaiplus.cn)
   - 智能代理：统一API端点路由
 - **图表库**：Chart.js 4.4.0 (数据可视化)
+- **图像处理**：Canvas API (图片拼接、高质量渲染)
 - **存储**：LocalStorage
-- **架构**：双模块独立设计
+- **架构**：三模块独立设计 + 图片拼接工具
 
 ### 项目结构
 ```
@@ -97,11 +119,12 @@ sijiantaofangan/
 ├── index.html                      # 🏠 导航主页面
 ├── brand-analysis.html             # 🏢 品牌分析页面
 ├── market-research.html            # 🏪 商圈调研页面
+├── image-merger.html               # 🖼️ 图片拼接工具页面
 ├── package.json                    # 📦 项目依赖配置
 ├── proxy-server.js                 # 🌐 智能API代理服务器
 ├── test-proxy-fix.html             # 🧪 代理服务器测试页面
 ├── test-model-output.html          # 🧪 模型输出完整性测试
-├── debug-report-generation.html    # � 报告生成调试工具
+├── debug-report-generation.html    # 🔧 报告生成调试工具
 │
 ├── css/                            # 🎨 样式文件
 │   ├── theme.css                   # 🎨 统一主题配置
@@ -121,7 +144,16 @@ sijiantaofangan/
 │   ├── market-content-generator.js # 🤖 商圈调研内容生成
 │   ├── report-renderer.js          # 📊 品牌分析报告渲染
 │   ├── market-report-renderer.js   # 📊 商圈调研报告渲染
-│   └── chart-generator.js          # 📈 图表生成引擎
+│   ├── chart-generator.js          # 📈 图表生成引擎
+│   └── image-merger.js             # 🖼️ 图片拼接核心模块
+│
+├── 测试页面/                        # 🧪 功能测试页面
+│   └── test-image-merger.html      # 🖼️ 图片拼接功能测试
+│
+├── 文档/                           # 📚 项目文档
+│   ├── 图片拼接功能说明.md           # 🖼️ 图片拼接使用说明
+│   ├── CHART_HEIGHT_FIX.md         # 📊 图表高度修复文档
+│   └── CHART_LOADING_FIX.md        # 📊 Chart.js加载修复文档
 │
 └── templates/                      # 📋 AI提示词模板
     ├── prompt-template.js          # 🏢 品牌分析提示词
@@ -146,6 +178,25 @@ sijiantaofangan/
 5. 等待AI分析完成（通常10-30秒）
 6. 查看生成的完整8维度商圈调研报告和数据可视化图表
 7. 点击"复制名称"按钮复制报告标题
+
+### 🖼️ 图片拼接工具使用流程
+1. **访问方式**：
+   - 从商圈调研页面点击"图片拼接工具"按钮
+   - 或直接访问 `image-merger.html` 页面
+2. **上传图片**：
+   - 点击"选择图片"按钮选择多张图片
+   - 或直接拖拽图片文件到上传区域
+   - 支持JPG、PNG、WEBP格式，单文件最大10MB
+3. **管理图片**：
+   - 使用"上移"/"下移"按钮调整图片顺序
+   - 点击"删除"按钮移除不需要的图片
+4. **设置拼接参数**：
+   - 选择拼接方向：纵向（上下排列）或横向（左右排列）
+   - 选择对齐方式：居中、左对齐、右对齐
+   - 调整图片间距：0-50像素
+5. **生成和下载**：
+   - 点击"生成预览"查看拼接效果
+   - 满意后点击"下载图片"保存PNG格式结果
 
 ## 🔧 智能API代理系统
 
@@ -610,6 +661,42 @@ npm run test:coverage
 ```
 
 ## 📝 更新日志
+
+### v3.2.0 (2025-01-16) - 图片拼接功能重大更新
+
+#### 🖼️ 新增功能：图片拼接工具
+- **独立页面**：全新的图片拼接工具页面 (`image-merger.html`)
+- **多种上传方式**：支持点击选择和拖拽上传多张图片
+- **智能拼接算法**：基于Canvas API的高质量图片拼接
+- **灵活设置选项**：
+  - 拼接方向：纵向（上下排列）、横向（左右排列）
+  - 图片对齐：居中、左对齐、右对齐
+  - 间距调节：0-50像素自定义间距
+- **图片管理功能**：支持图片排序、删除、预览
+- **实时预览**：设置变化时自动更新拼接效果
+- **高质量下载**：PNG格式无损下载，保持图片质量
+
+#### 🎨 界面优化
+- **现代化UI设计**：与平台风格保持一致的视觉设计
+- **拖拽交互支持**：直观的拖拽上传体验
+- **智能状态提示**：友好的错误提示和加载状态
+- **响应式布局**：适配不同屏幕尺寸设备
+
+#### 🔧 技术改进
+- **Canvas API集成**：高质量图像处理和渲染
+- **异步文件处理**：优化大文件上传和处理性能
+- **内存管理优化**：避免内存泄漏，确保稳定运行
+- **事件处理优化**：修复重复事件绑定问题
+
+#### 🧪 测试和文档
+- **功能测试页面**：专门的图片拼接功能测试工具
+- **详细使用说明**：完整的功能使用文档
+- **技术文档**：Canvas API使用和性能优化说明
+
+#### 🔗 集成优化
+- **商圈调研集成**：在商圈调研页面添加图片拼接工具入口
+- **一键跳转**：从商圈调研页面直接跳转到拼接工具
+- **隐私保护**：本地处理保护用户图片隐私
 
 ### v3.1.1 (2025-01-14)
 

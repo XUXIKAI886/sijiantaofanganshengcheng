@@ -273,29 +273,38 @@
         }
 
         .upload-area {
-            border: 3px dashed #dee2e6;
+            border: 3px dashed #c1c7d0;
             border-radius: 12px;
             padding: 2rem;
             text-align: center;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
             transition: all 0.3s ease;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .upload-area:hover {
             border-color: #667eea;
-            background: #f0f4ff;
+            background: linear-gradient(135deg, #f0f4ff, #e8f2ff);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
         }
 
         .upload-area.dragover {
             border-color: #667eea;
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #e3f2fd, #dbeafe);
             transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
         }
 
         .upload-content h5 {
-            color: #495057;
+            color: #1f2937;
             margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .upload-content p {
+            color: #6b7280;
+            font-size: 0.95rem;
         }
 
         .upload-progress {
@@ -306,6 +315,46 @@
         .progress {
             height: 8px;
             border-radius: 4px;
+        }
+
+        /* 修复选择图片按钮样式 */
+        #selectImagesBtn {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            border: none !important;
+            color: white !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #selectImagesBtn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+        }
+
+        #selectImagesBtn:active {
+            transform: translateY(0) !important;
+        }
+
+        /* 空状态按钮样式 */
+        #emptyStateSelectBtn {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            border: none !important;
+            color: white !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #emptyStateSelectBtn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
         }
     </style>
 </head>
@@ -381,7 +430,7 @@
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
                                 <h5>点击上传或拖拽图片到此处</h5>
                                 <p class="text-muted mb-3">支持JPG、PNG、WEBP格式，可同时选择多张图片</p>
-                                <button type="button" class="btn btn-primary" onclick="selectImages()">
+                                <button type="button" class="btn btn-primary" id="selectImagesBtn">
                                     <i class="fas fa-plus me-2"></i>
                                     选择图片
                                 </button>

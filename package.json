@@ -1,6 +1,6 @@
 {
   "name": "brand-analysis-app",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "智能分析应用平台 - 支持品牌定位分析、商圈调研分析和店铺活动方案生成",
   "main": "proxy-server.js",
   "scripts": {
