@@ -1712,6 +1712,19 @@
                                         </label>
                                     </div>
                                 </div>
+
+                                <!-- 图片拼接功能按钮 -->
+                                <div class="col-12 mt-3">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <button type="button" class="btn btn-outline-info btn-sm" onclick="openImageMerger()">
+                                            <i class="fas fa-images me-2"></i>
+                                            图片拼接工具
+                                        </button>
+                                        <small class="text-muted">
+                                            打开专用工具上传并拼接多张截图
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1916,6 +1929,12 @@
 
         // 商圈调研模块初始化
         console.log('[商圈调研] 使用统一的Gemini 2.5 Flash Lite API');
+
+        // 图片拼接功能 - 直接跳转到拼接页面
+        function openImageMerger() {
+            // 直接打开图片拼接页面
+            window.open('image-merger.html', '_blank');
+        }
     </script>
 </body>
 </html>
