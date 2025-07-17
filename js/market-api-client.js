@@ -1,21 +1,21 @@
 /**
- * 商圈调研分析 - Gemini 2.5 Flash API客户端
- * 负责与Gemini 2.5 Flash API的通信，支持多模态分析
+ * 商圈调研分析 - Gemini 2.0 Flash Lite API客户端
+ * 负责与Gemini 2.0 Flash Lite API的通信，支持多模态分析
  */
 
 class MarketAPIClient {
     constructor() {
-        // API配置 - 只使用Gemini 2.5 Flash
+        // API配置 - 只使用Gemini 2.0 Flash Lite
         this.apiConfigs = {
-            'gemini-2.5-flash': {
-                name: 'Gemini 2.5 Flash (haxiaiplus.cn)',
+            'gemini-2.0-flash-lite': {
+                name: 'Gemini 2.0 Flash Lite (haxiaiplus.cn)',
                 baseURL: 'https://haxiaiplus.cn/v1/chat/completions',
                 apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-                model: 'gemini-2.5-flash',
+                model: 'gemini-2.0-flash-lite',
                 temperature: 0.8,
                 max_tokens: 16384, // 增加到16K tokens
                 timeout: 360000,
-                description: 'Gemini 2.5 Flash模型，支持截图分析，性能稳定',
+                description: 'Gemini 2.0 Flash Lite模型，支持截图分析，性能稳定',
                 features: ['支持截图分析', '响应快速', '性能稳定', '多模态支持'],
                 status: 'stable',
                 icon: 'fas fa-bolt',
@@ -29,8 +29,8 @@ class MarketAPIClient {
             }
         };
 
-        // 使用唯一的Gemini 2.5 Flash API
-        this.currentApiKey = 'gemini-2.5-flash';
+        // 使用唯一的Gemini 2.0 Flash Lite API
+        this.currentApiKey = 'gemini-2.0-flash-lite';
         this.config = this.getCurrentConfig();
 
         this.retryConfig = {

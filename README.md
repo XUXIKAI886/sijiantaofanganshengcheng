@@ -2,7 +2,7 @@
 
 > 基于AI技术的智能分析平台，提供品牌定位分析和商圈调研分析服务，为餐饮行业提供专业的商业决策支持
 
-[![版本](https://img.shields.io/badge/版本-v3.2.2-blue)](https://github.com/XUXIKAI886/sijiantaofanganshengcheng)
+[![版本](https://img.shields.io/badge/版本-v3.2.3-blue)](https://github.com/XUXIKAI886/sijiantaofanganshengcheng)
 [![项目状态](https://img.shields.io/badge/状态-生产就绪-brightgreen)](https://github.com/XUXIKAI886/sijiantaofangan)
 [![技术栈](https://img.shields.io/badge/技术栈-HTML5%20%7C%20CSS3%20%7C%20JavaScript%20%7C%20Canvas%20API%20%7C%20DaisyUI-blue)](https://github.com/XUXIKAI886/sijiantaofangan)
 [![AI集成](https://img.shields.io/badge/AI-Gemini%20Pro%20%2B%20Gemini%202.5%20Flash%20Lite-orange)](https://github.com/XUXIKAI886/sijiantaofangan)
@@ -105,9 +105,9 @@ node proxy-server.js
 ### 核心技术栈
 - **前端**：HTML5 + CSS3 + JavaScript（原生）
 - **AI服务**：
-  - 品牌分析：Gemini 2.5 Flash API (haxiaiplus.cn)
-  - 商圈调研：Gemini 2.5 Flash API (haxiaiplus.cn)
-  - 店铺活动：Gemini 2.5 Flash API (haxiaiplus.cn)
+  - 品牌分析：Gemini 2.0 Flash Lite API (haxiaiplus.cn)
+  - 商圈调研：Gemini 2.0 Flash Lite API (haxiaiplus.cn)
+  - 店铺活动：Gemini 2.0 Flash Lite API (haxiaiplus.cn)
   - 智能代理：统一API端点路由
 - **图表库**：Chart.js 4.4.0 (数据可视化)
 - **图像处理**：Canvas API (图片拼接、高质量渲染)
@@ -663,13 +663,13 @@ npm run test:coverage
 
 ## 📝 更新日志
 
-### v3.2.2 (2025-01-16) - 模型升级 + 图片拼接功能
+### v3.2.3 (2025-01-16) - 模型升级 + 测试修复
 
-#### 🚀 模型升级：全面切换到 Gemini 2.5 Flash
-- **三模块统一升级**：品牌分析、商圈调研、店铺活动全部升级到 Gemini 2.5 Flash
-- **性能提升**：更快的响应速度和更高的生成质量
+#### 🚀 模型升级：全面切换到 Gemini 2.0 Flash Lite
+- **三模块统一升级**：品牌分析、商圈调研、店铺活动全部升级到 Gemini 2.0 Flash Lite
+- **性能优化**：更稳定的响应和更好的兼容性
 - **API统一**：所有模块使用相同的API端点，简化维护
-- **测试验证**：新增专门的测试页面验证模型切换效果
+- **测试修复**：修复测试页面方法调用错误，确保测试功能正常
 
 ### v3.2.0 (2025-01-16) - 图片拼接功能重大更新
 

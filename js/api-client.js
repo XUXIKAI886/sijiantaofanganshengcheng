@@ -1,6 +1,6 @@
 /**
- * Gemini 2.5 Flash API 客户端
- * 负责与Gemini 2.5 Flash API的通信，专业的品牌分析服务
+ * Gemini 2.0 Flash Lite API 客户端
+ * 负责与Gemini 2.0 Flash Lite API的通信，专业的品牌分析服务
  */
 
 class APIClient {
@@ -8,7 +8,7 @@ class APIClient {
         this.config = {
             baseURL: this.getAPIBaseURL(),
             apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash-lite',
             temperature: 0.8,
             max_tokens: 16384, // 增加到16K tokens，与商圈调研模块一致
             timeout: 360000 // 360秒超时，支持更复杂的分析
@@ -32,10 +32,10 @@ class APIClient {
         try {
             if (typeof APIFallback !== 'undefined') {
                 this.fallback = new APIFallback();
-                console.log('[品牌分析-Gemini 2.5] 备用API已初始化');
+                console.log('[品牌分析-Gemini 2.0 Lite] 备用API已初始化');
             }
         } catch (error) {
-            console.warn('[品牌分析-Gemini 2.5] 备用API初始化失败:', error);
+            console.warn('[品牌分析-Gemini 2.0 Lite] 备用API初始化失败:', error);
         }
     }
 
@@ -53,13 +53,13 @@ class APIClient {
             // 使用本地代理服务器
             return 'http://localhost:8080/api/chat/completions';
         } else {
-            // 使用Gemini 2.5 Flash Lite API
+            // 使用Gemini 2.0 Flash Lite API
             return 'https://haxiaiplus.cn/v1/chat/completions';
         }
     }
     
     /**
-     * 调用Gemini 2.5 Flash Lite API生成内容
+     * 调用Gemini 2.0 Flash Lite API生成内容
      * @param {string} prompt - 提示词
      * @param {Object} options - 可选配置
      * @returns {Promise<string>} - 生成的内容
