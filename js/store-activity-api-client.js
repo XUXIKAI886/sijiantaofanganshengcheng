@@ -1,44 +1,30 @@
 /**
  * 店铺活动方案生成 - API客户端
- * 负责与Gemini Pro和Gemini 2.5 Flash Lite API的通信
+ * 负责与Gemini 2.5 Flash API的通信
  */
 
 class StoreActivityAPIClient {
     constructor() {
-        // API配置 - 支持双API
+        // API配置 - 只使用Gemini 2.5 Flash
         this.apiConfigs = {
-            'gemini-pro': {
-                name: 'Gemini Pro (annyun.cn)',
-                baseURL: 'https://api.annyun.cn/v1/chat/completions',
-                apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-                model: 'gemini-pro',
-                temperature: 0.8,
-                max_tokens: 16384,
-                timeout: 360000,
-                description: 'Gemini Pro模型，专业的文本生成',
-                features: ['文本生成', '逻辑推理', '创意写作'],
-                status: 'stable',
-                icon: 'fas fa-brain',
-                color: '#4285f4'
-            },
-            'gemini-2.5-flash-lite': {
-                name: 'Gemini 2.5 Flash Lite (haxiaiplus.cn)',
+            'gemini-2.5-flash': {
+                name: 'Gemini 2.5 Flash (haxiaiplus.cn)',
                 baseURL: 'https://haxiaiplus.cn/v1/chat/completions',
                 apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-                model: 'gemini-2.5-flash-lite-preview-06-17',
+                model: 'gemini-2.5-flash',
                 temperature: 0.8,
                 max_tokens: 16384,
                 timeout: 360000,
-                description: 'Gemini 2.5 Flash Lite模型，快速响应',
-                features: ['快速生成', '高质量输出', '稳定性强'],
+                description: 'Gemini 2.5 Flash模型，专业的文本生成',
+                features: ['文本生成', '逻辑推理', '创意写作', '快速响应'],
                 status: 'stable',
                 icon: 'fas fa-bolt',
-                color: '#ff6b35'
+                color: '#4285f4'
             }
         };
 
-        // 默认使用Gemini 2.5 Flash Lite
-        this.currentApiKey = 'gemini-2.5-flash-lite';
+        // 默认使用Gemini 2.5 Flash
+        this.currentApiKey = 'gemini-2.5-flash';
         this.config = this.getCurrentConfig();
 
         this.retryConfig = {
@@ -72,11 +58,18 @@ class StoreActivityAPIClient {
      * @returns {string} - 处理后的URL
      */
     getAPIBaseURL(originalURL) {
-        // 在开发环境中使用代理服务器
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            return '/api/chat/completions';
+        // 检测是否在本地开发环境
+        const isLocalhost = window.location.hostname === 'localhost' ||
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.protocol === 'file:';
+
+        if (isLocalhost && window.location.port === '8080') {
+            // 使用本地代理服务器
+            return 'http://localhost:8080/api/chat/completions';
+        } else {
+            // 使用原始API地址
+            return originalURL;
         }
-        return originalURL;
     }
 
     /**
