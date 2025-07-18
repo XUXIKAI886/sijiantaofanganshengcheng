@@ -121,10 +121,11 @@ class StoreActivityPromptTemplate {
         <div class="activity-content">
             <p><strong>套餐设计原则：</strong>营养均衡，搭配合理，禁止主食+主食等不合理组合</p>
             <p><strong>搭配规则：</strong>主食类+汤类/饮品类，主菜类+主食类，小食类+饮品类，荤菜类+素菜类</p>
+            <p><strong>命名要求：</strong>套餐名称不要包含早餐、午餐、晚餐等时间限制词汇，使用通用性描述</p>
             <ul class="package-list">
-                <li><strong>经典正餐套餐：</strong>[主菜类产品] + [主食类产品] - 饱腹感强，营养均衡</li>
+                <li><strong>经典套餐：</strong>[主菜类产品] + [主食类产品] - 饱腹感强，营养均衡</li>
                 <li><strong>暖胃套餐：</strong>[主食类产品] + [汤类产品] - 温暖舒适，易消化</li>
-                <li><strong>轻食套餐：</strong>[小食类产品] + [饮品类产品] - 适合下午茶或夜宵（可选）</li>
+                <li><strong>轻食套餐：</strong>[小食类产品] + [饮品类产品] - 清爽搭配，口感丰富（可选）</li>
             </ul>
             <p><strong>注意：</strong>请根据实际菜品情况，确保搭配的合理性和营养均衡</p>
         </div>
