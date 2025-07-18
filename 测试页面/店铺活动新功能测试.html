@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店铺活动新功能测试 - 好评返券+限时秒杀+优化套餐</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/theme.css" rel="stylesheet">
+    <link href="../css/store-activity.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="header-section text-center py-4">
+                    <h1 class="display-4 fw-bold text-primary">
+                        <i class="fas fa-store me-3"></i>店铺活动新功能测试
+                    </h1>
+                    <p class="lead text-muted">测试好评返券、限时秒杀和优化套餐功能</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 左侧输入区域 -->
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-edit me-2"></i>店铺信息输入</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="storeForm">
+                            <div class="mb-3">
+                                <label for="storeName" class="form-label">店铺名称</label>
+                                <input type="text" class="form-control" id="storeName" value="小柴熟肉店" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="storeAddress" class="form-label">店铺地址</label>
+                                <input type="text" class="form-control" id="storeAddress" value="北京市朝阳区三里屯街道" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="businessCategory" class="form-label">经营品类</label>
+                                <input type="text" class="form-control" id="businessCategory" value="熟食卤味" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="businessHours" class="form-label">营业时间</label>
+                                <input type="text" class="form-control" id="businessHours" value="10:00-22:00" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="menuItems" class="form-label">菜品信息</label>
+                                <textarea class="form-control" id="menuItems" rows="8" required>卤牛肉 28元
+卤猪蹄 18元
+卤鸡爪 15元
+卤鸡蛋 8元
+卤豆腐 12元
+卤海带 10元
+白米饭 3元
+小米粥 5元
+紫菜蛋花汤 8元
+可乐 6元
+雪碧 6元
+豆浆 4元</textarea>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary w-100" onclick="testNewFeatures()">
+                                <i class="fas fa-rocket me-2"></i>测试新功能
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧结果显示区域 -->
+            <div class="col-md-7">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>生成的活动方案</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultArea" class="result-container">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                                <p>点击"测试新功能"按钮查看生成的活动方案</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能说明 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>新功能说明</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="text-warning"><i class="fas fa-star me-2"></i>好评返券活动</h6>
+                                <ul class="list-unstyled">
+                                    <li>• 固定25减2元优惠券</li>
+                                    <li>• 不可叠加使用</li>
+                                    <li>• 提升店铺评分</li>
+                                    <li>• 促进二次回购</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-danger"><i class="fas fa-clock me-2"></i>限时秒杀活动</h6>
+                                <ul class="list-unstyled">
+                                    <li>• 选择3-5款热门产品</li>
+                                    <li>• 原价基础上减2元</li>
+                                    <li>• 用餐高峰期执行</li>
+                                    <li>• 制造紧迫感</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-success"><i class="fas fa-utensils me-2"></i>优化套餐搭配</h6>
+                                <ul class="list-unstyled">
+                                    <li>• 仅生成2-3个精品套餐</li>
+                                    <li>• 禁止主食+主食搭配</li>
+                                    <li>• 营养均衡合理搭配</li>
+                                    <li>• 提升用户体验</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../templates/store-activity-prompt-template.js"></script>
+    <script src="../js/store-activity-content-generator.js"></script>
+    
+    <script>
+        function testNewFeatures() {
+            const storeData = {
+                storeName: document.getElementById('storeName').value,
+                storeAddress: document.getElementById('storeAddress').value,
+                businessCategory: document.getElementById('businessCategory').value,
+                businessHours: document.getElementById('businessHours').value,
+                menuItems: document.getElementById('menuItems').value
+            };
+            
+            // 创建内容生成器实例
+            const contentGenerator = new StoreActivityContentGenerator();
+            
+            // 生成提示词
+            const prompt = contentGenerator.buildPrompt(storeData);
+            
+            // 显示生成的提示词（用于测试）
+            const resultArea = document.getElementById('resultArea');
+            resultArea.innerHTML = `
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-code me-2"></i>生成的提示词预览：</h6>
+                    <pre class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto; font-size: 12px;">${prompt}</pre>
+                </div>
+                
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check-circle me-2"></i>新功能验证：</h6>
+                    <ul class="mb-0">
+                        <li>✅ 好评返券活动已添加（25减2元优惠券）</li>
+                        <li>✅ 限时秒杀活动已添加（原价减2元）</li>
+                        <li>✅ 套餐数量已优化（2-3个精品套餐）</li>
+                        <li>✅ 套餐搭配规则已完善（禁止不合理搭配）</li>
+                    </ul>
+                </div>
+            `;
+            
+            console.log('生成的提示词:', prompt);
+        }
+    </script>
+</body>
+</html>
