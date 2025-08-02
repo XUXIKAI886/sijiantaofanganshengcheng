@@ -77,7 +77,7 @@ class StoreActivityPromptTemplate {
     <div class="activity-section">
         <h3>满减活动</h3>
         <div class="activity-content">
-            <p><strong>活动规则：</strong>[具体满减规则，如满X减X，建议设置2-3个档位，满减起始门槛不能低于30元]</p>
+            <p><strong>活动规则：</strong>满30减1元，满50减2元，满80减3元（默认小额减免策略）</p>
             <p><strong>推荐理由：</strong>[说明为什么这样设置，考虑了哪些因素]</p>
         </div>
     </div>
@@ -85,7 +85,7 @@ class StoreActivityPromptTemplate {
     <div class="activity-section">
         <h3>减配送费活动</h3>
         <div class="activity-content">
-            <p><strong>活动规则：</strong>[配送费立减金额或条件]</p>
+            <p><strong>活动规则：</strong>配送费立减1元（无门槛优惠）</p>
             <p><strong>推荐理由：</strong>[说明减配送费的策略考虑]</p>
         </div>
     </div>
@@ -93,7 +93,7 @@ class StoreActivityPromptTemplate {
     <div class="activity-section">
         <h3>下单返券活动</h3>
         <div class="activity-content">
-            <p><strong>活动规则：</strong>[下单次数及返券面额、使用条件]</p>
+            <p><strong>活动规则：</strong>下单成功即可获得1元优惠券，满35元可用，有效期7天</p>
             <p><strong>推荐理由：</strong>[说明返券活动如何提高复购率]</p>
         </div>
     </div>
@@ -321,9 +321,9 @@ class StoreActivityPromptTemplate {
 
 请制定以下活动方案：
 
-1. 满减活动：设计合理的满减规则（建议2-3个档位）
-2. 减配送费活动：确定配送费减免金额或条件
-3. 下单返券活动：规划返券活动细节，提高复购率
+1. 满减活动：满30减1元，满50减2元，满80减3元（默认小额减免策略）
+2. 减配送费活动：配送费立减1元（无门槛优惠）
+3. 下单返券活动：下单成功即可获得1元优惠券，满35元可用，有效期7天
 4. 单品套餐搭配：设计至少8个套餐，价格控制在36元以内
 
 **Suggestions 补充说明：**
