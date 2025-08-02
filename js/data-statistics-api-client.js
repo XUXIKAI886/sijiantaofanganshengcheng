@@ -5,16 +5,37 @@
 
 class DataStatisticsApiClient {
     constructor() {
-        // API配置 - 使用统一的代理服务器
+        // API配置 - 动态检测环境
         this.config = {
-            baseUrl: '/api/chat/completions',  // 使用本地代理
+            baseUrl: this.getAPIBaseURL(),
+            apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
             model: 'gemini-2.5-flash-lite-preview-06-17',
             temperature: 0.8,
             max_tokens: 16384,
             timeout: 360000  // 6分钟超时
         };
-        
+
         console.log('[数据统计API] 客户端初始化完成');
+        console.log('[数据统计API] 使用API地址:', this.config.baseUrl);
+    }
+
+    /**
+     * 获取API基础URL - 自动检测是否使用代理
+     * @returns {string} - API基础URL
+     */
+    getAPIBaseURL() {
+        // 检测是否在本地开发环境
+        const isLocalhost = window.location.hostname === 'localhost' ||
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.protocol === 'file:';
+
+        if (isLocalhost && window.location.port === '8080') {
+            // 使用本地代理服务器
+            return 'http://localhost:8080/api/chat/completions';
+        } else {
+            // 直接使用Gemini 2.5 Flash Lite API
+            return 'https://haxiaiplus.cn/v1/chat/completions';
+        }
     }
 
     /**
@@ -80,11 +101,18 @@ class DataStatisticsApiClient {
         const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
         try {
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+
+            // 如果不是本地代理，添加API密钥
+            if (!this.config.baseUrl.includes('localhost')) {
+                headers['Authorization'] = `Bearer ${this.config.apiKey}`;
+            }
+
             const response = await fetch(this.config.baseUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: headers,
                 body: JSON.stringify(requestBody),
                 signal: controller.signal
             });
