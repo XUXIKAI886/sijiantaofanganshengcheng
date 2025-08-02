@@ -97,14 +97,14 @@ class DataStatisticsReportRenderer {
                 font-size: 1.8rem;
                 font-weight: 700;
                 margin: 0;
-                color: #ffffff;
+                color: #ffffff !important;
             ">
-                <i class="fas fa-table" style="margin-right: 8px;"></i>
+                <i class="fas fa-table" style="margin-right: 8px; color: #ffffff !important;"></i>
                 ${formData.storeName} - 数据统计报告
             </h1>
             <p style="
                 margin: 8px 0 0 0;
-                color: #ffffff;
+                color: #ffffff !important;
                 font-size: 14px;
             ">
                 生成时间：${currentDate} | 分析周期：近30天
