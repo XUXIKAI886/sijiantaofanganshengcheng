@@ -92,8 +92,8 @@ class ContentGenerator {
         content = content.replace(/^```html\s*/i, '');
         content = content.replace(/\s*```$/i, '');
 
-        // 移除AI的介绍性文字和多余话语
-        content = this.removeAIIntroText(content);
+        // 由于提示词已明确要求直接输出内容，这里只做基础清理
+        content = this.basicContentCleanup(content);
 
         // 移除可能的额外空行
         content = content.replace(/\n\s*\n\s*\n/g, '\n\n');
@@ -109,61 +109,29 @@ class ContentGenerator {
     }
 
     /**
-     * 移除AI的介绍性文字和多余话语
+     * 基础内容清理（简化版）
      * @param {string} content - 原始内容
      * @returns {string} - 清理后的内容
      */
-    removeAIIntroText(content) {
-        let cleanedContent = content;
+    basicContentCleanup(content) {
+        let cleanedContent = content.trim();
 
-        // 移除常见的AI介绍性开头文字
-        const introPatterns = [
-            // 匹配"好的，作为...专家，我将..."这类开头（更全面的匹配）
-            /^好的[，,]\s*作为.*?专家[，,]\s*我将.*?分析[。.]?\s*/is,
-            // 匹配"好的，作为...专家，我将基于..."这类开头
-            /^好的[，,]\s*作为.*?专家[，,]\s*我将基于.*?分析[。.]?\s*/is,
-            // 匹配"作为...专家，我将..."这类开头
-            /^作为.*?专家[，,]\s*我将.*?分析[。.]?\s*/is,
-            // 匹配"作为一名...专家，我将..."这类开头
-            /^作为一名.*?专家[，,]\s*我将.*?分析[。.]?\s*/is,
-            // 匹配"我将为您提供..."这类开头
-            /^我将为您提供.*?分析[。.]?\s*/is,
-            // 匹配"我将基于您提供的..."这类开头
-            /^我将基于您提供的.*?分析[。.]?\s*/is,
-            // 匹配"以下是...分析报告"这类开头
-            /^以下是.*?分析报告[：:]?\s*/is,
-            // 匹配"根据您提供的信息..."这类开头
-            /^根据您提供的信息[，,].*?分析[。.]?\s*/is,
-            // 匹配"基于您提供的店铺信息..."这类开头
-            /^基于您提供的店铺信息[，,].*?分析[。.]?\s*/is,
-            // 匹配包含```html的开头段落
-            /^[^<]*```html[^<]*/is,
-            // 匹配其他常见的AI回复开头
-            /^很高兴为您.*?分析[。.]?\s*/is,
-            /^基于您的需求.*?分析[。.]?\s*/is,
-            // 匹配完整的介绍段落（包含店铺名称的）
-            /^好的[，,].*?对[""].*?[""].*?进行.*?分析[。.]?\s*/is,
-            // 匹配任何以"好的"开头的长段落介绍
-            /^好的[，,].*?分析[。.]?\s*/is
-        ];
-
-        // 逐个应用清理规则
-        for (const pattern of introPatterns) {
-            cleanedContent = cleanedContent.replace(pattern, '');
+        // 只处理最基本的清理，因为提示词已经明确要求直接输出内容
+        // 移除可能残留的markdown标记
+        cleanedContent = cleanedContent.replace(/^```html\s*/i, '');
+        cleanedContent = cleanedContent.replace(/\s*```$/i, '');
+        
+        // 如果内容不是以HTML标签开始，但包含HTML，尝试找到第一个HTML标签
+        if (!cleanedContent.startsWith('<') && cleanedContent.includes('<')) {
+            const firstTagMatch = cleanedContent.match(/<[^>]+>/);
+            if (firstTagMatch) {
+                const firstTagIndex = cleanedContent.indexOf(firstTagMatch[0]);
+                cleanedContent = cleanedContent.substring(firstTagIndex);
+                console.log('[内容清理] 移除了HTML标签前的文字');
+            }
         }
 
-        // 移除开头的空白字符和换行
-        cleanedContent = cleanedContent.trim();
-
-        // 如果清理后内容为空或太短，返回原内容
-        if (cleanedContent.length < 50) {
-            console.warn('[内容清理] 清理后内容过短，保留原内容');
-            return content;
-        }
-
-        console.log('[内容清理] AI介绍文字清理完成');
-        console.log('[内容清理] 原始长度:', content.length, '清理后长度:', cleanedContent.length);
-
+        console.log('[内容清理] 基础清理完成，长度:', cleanedContent.length);
         return cleanedContent;
     }
 
