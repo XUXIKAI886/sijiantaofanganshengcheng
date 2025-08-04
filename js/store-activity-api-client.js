@@ -5,17 +5,17 @@
 
 class StoreActivityAPIClient {
     constructor() {
-        // API配置 - 只使用Gemini 2.0 Flash Lite
+        // API配置 - 只使用Gemini 2.5 Flash Lite
         this.apiConfigs = {
-            'gemini-2.0-flash-lite': {
-                name: 'Gemini 2.0 Flash Lite (haxiaiplus.cn)',
+            'gemini-2.5-flash-lite-preview-06-17': {
+                name: 'Gemini 2.5 Flash Lite (haxiaiplus.cn)',
                 baseURL: 'https://haxiaiplus.cn/v1/chat/completions',
                 apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-                model: 'gemini-2.0-flash-lite',
+                model: 'gemini-2.5-flash-lite-preview-06-17',
                 temperature: 0.8,
                 max_tokens: 16384,
                 timeout: 360000,
-                description: 'Gemini 2.0 Flash Lite模型，专业的文本生成',
+                description: 'Gemini 2.5 Flash Lite模型，专业的文本生成',
                 features: ['文本生成', '逻辑推理', '创意写作', '快速响应'],
                 status: 'stable',
                 icon: 'fas fa-bolt',
@@ -23,8 +23,8 @@ class StoreActivityAPIClient {
             }
         };
 
-        // 默认使用Gemini 2.0 Flash Lite
-        this.currentApiKey = 'gemini-2.0-flash-lite';
+        // 默认使用Gemini 2.5 Flash Lite
+        this.currentApiKey = 'gemini-2.5-flash-lite-preview-06-17';
         this.config = this.getCurrentConfig();
 
         this.retryConfig = {
