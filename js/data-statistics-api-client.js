@@ -12,7 +12,7 @@ class DataStatisticsApiClient {
             model: 'gemini-2.5-flash-lite-preview-06-17',
             temperature: 0.8,
             max_tokens: 16384,
-            timeout: 360000  // 6分钟超时
+            timeout: 600000  // 10分钟超时
         };
 
         console.log('[数据统计API] 客户端初始化完成');
@@ -44,51 +44,70 @@ class DataStatisticsApiClient {
      * @returns {Promise<string>} - 生成的报告内容
      */
     async generateReport(prompt) {
-        try {
-            console.log('[数据统计API] 开始调用API生成报告');
-            console.log('[数据统计API] 提示词长度:', prompt.length);
+        console.log('[数据统计API] 开始调用API生成报告');
+        console.log('[数据统计API] 提示词长度:', prompt.length);
 
-            const requestBody = {
-                model: this.config.model,
-                messages: [
-                    {
-                        role: "system",
-                        content: "你是一个专业的外卖店铺数据分析师，擅长分析店铺运营数据并提供专业的优化建议。请根据用户提供的数据进行深度分析，并生成专业的HTML格式报告。"
-                    },
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
-                temperature: this.config.temperature,
-                max_tokens: this.config.max_tokens,
-                stream: false
-            };
+        // 重试配置
+        const maxRetries = 3;
+        let lastError = null;
 
-            console.log('[数据统计API] 请求数据:', {
-                model: requestBody.model,
-                messagesLength: requestBody.messages.length,
-                temperature: requestBody.temperature,
-                max_tokens: requestBody.max_tokens
-            });
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                console.log(`[数据统计API] 第${attempt}次尝试调用API`);
 
-            // 发送请求
-            const response = await this.makeRequest(requestBody);
-            
-            if (!response) {
-                throw new Error('API响应为空');
+                const requestBody = {
+                    model: this.config.model,
+                    messages: [
+                        {
+                            role: "system",
+                            content: "你是一个专业的外卖店铺数据分析师，擅长分析店铺运营数据并提供专业的优化建议。请根据用户提供的数据进行深度分析，并生成专业的HTML格式报告。"
+                        },
+                        {
+                            role: "user",
+                            content: prompt
+                        }
+                    ],
+                    temperature: this.config.temperature,
+                    max_tokens: this.config.max_tokens,
+                    stream: false
+                };
+
+                console.log('[数据统计API] 请求数据:', {
+                    model: requestBody.model,
+                    messagesLength: requestBody.messages.length,
+                    temperature: requestBody.temperature,
+                    max_tokens: requestBody.max_tokens
+                });
+
+                // 发送请求
+                const response = await this.makeRequest(requestBody);
+
+                if (!response) {
+                    throw new Error('API响应为空');
+                }
+
+                // 解析响应
+                const content = this.parseResponse(response);
+
+                console.log('[数据统计API] 报告生成成功，内容长度:', content.length);
+                return content;
+
+            } catch (error) {
+                lastError = error;
+                console.error(`[数据统计API] 第${attempt}次尝试失败:`, error.message);
+
+                // 如果不是最后一次尝试，等待后重试
+                if (attempt < maxRetries) {
+                    const waitTime = attempt * 2000; // 递增等待时间：2秒、4秒
+                    console.log(`[数据统计API] ${waitTime/1000}秒后进行第${attempt + 1}次重试`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                }
             }
-
-            // 解析响应
-            const content = this.parseResponse(response);
-            
-            console.log('[数据统计API] 报告生成成功，内容长度:', content.length);
-            return content;
-
-        } catch (error) {
-            console.error('[数据统计API] 生成报告失败:', error);
-            throw new Error(`生成报告失败: ${error.message}`);
         }
+
+        // 所有重试都失败了
+        console.error('[数据统计API] 所有重试都失败，最终错误:', lastError);
+        throw new Error(`生成报告失败（已重试${maxRetries}次）: ${lastError.message}`);
     }
 
     /**
@@ -143,11 +162,15 @@ class DataStatisticsApiClient {
 
         } catch (error) {
             clearTimeout(timeoutId);
-            
+
             if (error.name === 'AbortError') {
-                throw new Error('请求超时，请重试');
+                throw new Error('请求超时（10分钟），请检查网络连接后重试');
             }
-            
+
+            if (error.message.includes('Failed to fetch')) {
+                throw new Error('网络连接失败，请检查网络连接或稍后重试');
+            }
+
             throw error;
         }
     }
