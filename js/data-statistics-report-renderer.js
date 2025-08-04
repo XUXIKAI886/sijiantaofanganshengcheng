@@ -132,12 +132,18 @@ class DataStatisticsReportRenderer {
         
         // 为不同类型的单元格添加样式类
         content = content.replace(/<td>([^<]*(?:店铺基本信息|30天运营数据|配送服务设置|店铺权重配置)[^<]*)<\/td>/gi, '<td class="category-cell">$1</td>');
-        content = content.replace(/<td>([^<]*(?:分析|评估|对比|效果)[^<]*)<\/td>/gi, '<td class="analysis-cell">$1</td>');
-        content = content.replace(/<td>([^<]*(?:建议|策略|优化|提升)[^<]*)<\/td>/gi, '<td class="suggestion-cell">$1</td>');
+
+        // 精确匹配"数据分析"列 - 淡绿色背景
+        content = content.replace(/<td>([^<]*(?:数据分析|分析结果|分析评估|数据评估|效果分析)[^<]*)<\/td>/gi, '<td class="analysis-cell">$1</td>');
+
+        // 精确匹配"优化建议"列 - 淡黄色背景
+        content = content.replace(/<td>([^<]*(?:优化建议|改进建议|提升建议|优化策略|改进措施|建议措施)[^<]*)<\/td>/gi, '<td class="suggestion-cell">$1</td>');
         
-        // 为表格行添加随机的淡绿色和淡黄色背景标记
-        content = this.addRandomRowHighlights(content);
-        
+        // 移除随机背景色功能，使用固定的列背景色
+        // content = this.addRandomRowHighlights(content);
+
+        // 应用固定的列背景色
+        content = this.applyColumnBackgroundColors(content);
 
         // 添加高端大气的内联样式
         const styles = `
@@ -236,12 +242,21 @@ class DataStatisticsReportRenderer {
                 vertical-align: middle;
             }
 
-            /* 移除默认的隔行变色，使用随机背景色 */
-            
+            /* 移除默认的隔行变色，使用固定列背景色 */
+
             .stats-table tbody tr:hover td {
                 background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
                 transform: scale(1.01);
                 box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+            }
+
+            /* 确保列背景色优先级最高 */
+            .stats-table tbody tr:hover td.analysis-cell {
+                background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%) !important;
+            }
+
+            .stats-table tbody tr:hover td.suggestion-cell {
+                background: linear-gradient(135deg, #fef5e7 0%, #fefcbf 100%) !important;
             }
 
             /* 移除数字高亮样式，改为普通文本显示 */
@@ -260,13 +275,13 @@ class DataStatisticsReportRenderer {
             .analysis-cell {
                 color: #2d3748;
                 font-style: italic;
-                background: linear-gradient(135deg, #fef5e7 0%, #fefcbf 100%) !important;
+                background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%) !important; /* 淡绿色背景 */
             }
-            
+
             .suggestion-cell {
                 color: #2d3748;
                 font-weight: 500;
-                background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%) !important;
+                background: linear-gradient(135deg, #fef5e7 0%, #fefcbf 100%) !important; /* 淡黄色背景 */
             }
             
             /* 响应式设计 */
@@ -315,6 +330,68 @@ class DataStatisticsReportRenderer {
         </style>`;
 
         return styles + content;
+    }
+
+    /**
+     * 应用固定的列背景色
+     * @param {string} content - HTML内容
+     * @returns {string} - 处理后的内容
+     */
+    applyColumnBackgroundColors(content) {
+        // 使用更强大的正则表达式来匹配表格结构
+        const tableRegex = /<table[^>]*class="stats-table"[^>]*>([\s\S]*?)<\/table>/gi;
+
+        return content.replace(tableRegex, (tableMatch) => {
+            // 分析表格结构，找到列索引
+            const headerMatch = tableMatch.match(/<thead[^>]*>([\s\S]*?)<\/thead>/i);
+            if (!headerMatch) return tableMatch;
+
+            const headerCells = headerMatch[1].match(/<th[^>]*>([\s\S]*?)<\/th>/gi) || [];
+            let analysisColumnIndex = -1;
+            let suggestionColumnIndex = -1;
+
+            // 找到"数据分析"和"优化建议"列的索引
+            headerCells.forEach((cell, index) => {
+                const cellText = cell.replace(/<[^>]*>/g, '').trim();
+                if (cellText.includes('数据分析') || cellText.includes('分析')) {
+                    analysisColumnIndex = index;
+                }
+                if (cellText.includes('优化建议') || cellText.includes('建议')) {
+                    suggestionColumnIndex = index;
+                }
+            });
+
+            // 如果找到了目标列，为对应的td添加背景色
+            if (analysisColumnIndex >= 0 || suggestionColumnIndex >= 0) {
+                const bodyMatch = tableMatch.match(/<tbody[^>]*>([\s\S]*?)<\/tbody>/i);
+                if (bodyMatch) {
+                    let bodyContent = bodyMatch[1];
+                    const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+
+                    bodyContent = bodyContent.replace(rowRegex, (rowMatch) => {
+                        const cells = rowMatch.match(/<td[^>]*>[\s\S]*?<\/td>/gi) || [];
+
+                        cells.forEach((cell, index) => {
+                            if (index === analysisColumnIndex) {
+                                // 数据分析列 - 淡绿色背景
+                                const newCell = cell.replace(/<td([^>]*)>/, '<td$1 style="background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%) !important;">');
+                                rowMatch = rowMatch.replace(cell, newCell);
+                            } else if (index === suggestionColumnIndex) {
+                                // 优化建议列 - 淡黄色背景
+                                const newCell = cell.replace(/<td([^>]*)>/, '<td$1 style="background: linear-gradient(135deg, #fef5e7 0%, #fefcbf 100%) !important;">');
+                                rowMatch = rowMatch.replace(cell, newCell);
+                            }
+                        });
+
+                        return rowMatch;
+                    });
+
+                    return tableMatch.replace(bodyMatch[1], bodyContent);
+                }
+            }
+
+            return tableMatch;
+        });
     }
 
     /**
