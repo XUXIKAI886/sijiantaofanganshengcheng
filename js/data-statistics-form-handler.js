@@ -165,9 +165,7 @@ class DataStatisticsFormHandler {
                 }
                 break;
             case 'deliveryRange':
-                if (value > 20) {
-                    return { valid: false, message: '配送范围一般不超过20公里' };
-                }
+                // 取消配送范围限制，允许填写任何数字
                 break;
         }
         return { valid: true };
