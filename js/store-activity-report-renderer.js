@@ -62,7 +62,7 @@ class StoreActivityReportRenderer {
             <div class="report-header bg-gradient-to-r from-orange-500 to-red-500 text-white p-6 rounded-lg mb-6 shadow-lg">
                 <div class="flex items-center">
                     <div>
-                        <h1 class="text-3xl font-bold mb-2 text-white">
+                        <h1 class="text-3xl font-bold mb-2" style="color: white !important;">
                             <i class="fas fa-store mr-3"></i>
                             ${storeData.storeName} - 活动方案报告
                         </h1>
