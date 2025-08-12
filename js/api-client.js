@@ -7,8 +7,8 @@ class APIClient {
     constructor() {
         this.config = {
             baseURL: this.getAPIBaseURL(),
-            apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-            model: 'gemini-2.5-flash-lite-preview-06-17',
+            apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
+            model: 'gemini-2.5-flash-lite',
             temperature: 0.8,
             max_tokens: 16384, // 增加到16K tokens，与商圈调研模块一致
             timeout: 360000 // 360秒超时，支持更复杂的分析
@@ -54,7 +54,7 @@ class APIClient {
             return 'http://localhost:8080/api/chat/completions';
         } else {
             // 使用Gemini 2.5 Flash Lite API
-            return 'https://haxiaiplus.cn/v1/chat/completions';
+            return 'https://jeniya.top/v1/chat/completions';
         }
     }
     

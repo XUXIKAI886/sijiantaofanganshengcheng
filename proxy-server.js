@@ -7,6 +7,8 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
+const { spawn } = require('child_process');
+const fs = require('fs');
 
 const app = express();
 const PORT = 8080;
@@ -20,15 +22,15 @@ app.use(express.static(__dirname));
 
 // API配置映射
 const API_CONFIGS = {
-    // Gemini 2.5 Flash Lite (haxiaiplus.cn) - 统一API
-    'gemini-2.5-flash-lite-preview-06-17': {
-        url: 'https://haxiaiplus.cn/v1/chat/completions',
-        defaultKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N'
+    // Gemini 2.5 Flash Lite (jeniya.top) - 统一API
+    'gemini-2.5-flash-lite': {
+        url: 'https://jeniya.top/v1/chat/completions',
+        defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
     },
     // Gemini Pro (annyun.cn) - 店铺活动方案模块支持
     'gemini-pro': {
         url: 'https://api.annyun.cn/v1/chat/completions',
-        defaultKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N'
+        defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
     }
 };
 
@@ -113,10 +115,68 @@ app.post('/api/chat/completions', async (req, res) => {
     }
 });
 
+// 启动截图应用的API端点
+app.post('/api/launch-screenshot', async (req, res) => {
+    try {
+        console.log('🖼️ 收到启动截图应用请求');
+
+        // FSRecorder.exe的路径
+        const fsRecorderPath = path.join(__dirname, 'FSCapture', 'FSRecorder.exe');
+
+        // 检查文件是否存在
+        if (!fs.existsSync(fsRecorderPath)) {
+            console.log('❌ FSRecorder.exe 文件不存在:', fsRecorderPath);
+            return res.status(404).json({
+                success: false,
+                error: 'FSRecorder.exe 文件不存在',
+                path: fsRecorderPath
+            });
+        }
+
+        console.log('📂 FSRecorder.exe 路径:', fsRecorderPath);
+
+        // 启动FSRecorder.exe
+        const child = spawn(fsRecorderPath, [], {
+            detached: true,
+            stdio: 'ignore'
+        });
+
+        // 分离子进程，让它独立运行
+        child.unref();
+
+        console.log('✅ FSRecorder.exe 启动成功，PID:', child.pid);
+
+        res.json({
+            success: true,
+            message: 'FSRecorder.exe 启动成功',
+            pid: child.pid
+        });
+
+    } catch (error) {
+        console.error('❌ 启动FSRecorder.exe失败:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// 检查截图应用是否可用的API端点
+app.get('/api/check-screenshot-app', (req, res) => {
+    const fsRecorderPath = path.join(__dirname, 'FSCapture', 'FSRecorder.exe');
+    const exists = fs.existsSync(fsRecorderPath);
+
+    res.json({
+        available: exists,
+        path: fsRecorderPath
+    });
+});
+
 // 启动服务器
 app.listen(PORT, () => {
     console.log(`🚀 代理服务器启动成功！`);
     console.log(`📱 访问地址: http://localhost:${PORT}`);
     console.log(`🧪 测试页面: http://localhost:${PORT}/test-gemini-api.html`);
     console.log(`🏠 主应用: http://localhost:${PORT}/index.html`);
+    console.log(`🖼️ 截图功能: FSRecorder.exe ${fs.existsSync(path.join(__dirname, 'FSCapture', 'FSRecorder.exe')) ? '✅ 可用' : '❌ 不可用'}`);
 });

@@ -7,11 +7,11 @@ class StoreActivityAPIClient {
     constructor() {
         // API配置 - 只使用Gemini 2.5 Flash Lite
         this.apiConfigs = {
-            'gemini-2.5-flash-lite-preview-06-17': {
-                name: 'Gemini 2.5 Flash Lite (haxiaiplus.cn)',
-                baseURL: 'https://haxiaiplus.cn/v1/chat/completions',
-                apiKey: 'sk-BIChztSl1gwRjl06f5DZ3J15UMnLGgEBpiJa00VHTsQeI00N',
-                model: 'gemini-2.5-flash-lite-preview-06-17',
+            'gemini-2.5-flash-lite': {
+                name: 'Gemini 2.5 Flash Lite (jeniya.top)',
+                baseURL: 'https://jeniya.top/v1/chat/completions',
+                apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
+                model: 'gemini-2.5-flash-lite',
                 temperature: 0.8,
                 max_tokens: 16384,
                 timeout: 360000,
@@ -24,7 +24,7 @@ class StoreActivityAPIClient {
         };
 
         // 默认使用Gemini 2.5 Flash Lite
-        this.currentApiKey = 'gemini-2.5-flash-lite-preview-06-17';
+        this.currentApiKey = 'gemini-2.5-flash-lite';
         this.config = this.getCurrentConfig();
 
         this.retryConfig = {

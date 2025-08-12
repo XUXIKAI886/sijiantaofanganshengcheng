@@ -1768,6 +1768,10 @@
                             <i class="fas fa-copy me-2"></i>
                             复制名称
                         </button>
+                        <button id="market-screenshot-btn" class="btn btn-outline-primary ms-2" title="启动截图工具对调研报告进行截图">
+                            <i class="fas fa-camera me-2"></i>
+                            截图
+                        </button>
                     </div>
                 </div>
 
@@ -1935,6 +1939,155 @@
             // 在当前页面跳转到图片拼接页面
             window.location.href = 'image-merger.html';
         }
+
+        // 商圈调研截图管理器
+        class MarketScreenshotManager {
+            constructor() {
+                this.isLocalEnvironment = false;
+                this.init();
+            }
+
+            async init() {
+                await this.checkEnvironment();
+                this.bindEvents();
+                this.updateButtonState();
+            }
+
+            async checkEnvironment() {
+                try {
+                    const response = await fetch('/api/check-screenshot-app');
+                    const data = await response.json();
+                    this.isLocalEnvironment = data.available;
+                } catch (error) {
+                    this.isLocalEnvironment = false;
+                }
+            }
+
+            bindEvents() {
+                const screenshotBtn = document.getElementById('market-screenshot-btn');
+                if (screenshotBtn) {
+                    screenshotBtn.addEventListener('click', () => this.handleScreenshot());
+                }
+            }
+
+            updateButtonState() {
+                const screenshotBtn = document.getElementById('market-screenshot-btn');
+                if (!screenshotBtn) return;
+
+                if (this.isLocalEnvironment) {
+                    screenshotBtn.innerHTML = '<i class="fas fa-camera me-2"></i>截图';
+                    screenshotBtn.title = '启动FSRecorder截图工具';
+                } else {
+                    screenshotBtn.innerHTML = '<i class="fas fa-info-circle me-2"></i>截图指导';
+                    screenshotBtn.title = '查看截图操作指导';
+                }
+            }
+
+            async handleScreenshot() {
+                if (this.isLocalEnvironment) {
+                    await this.launchScreenshotApp();
+                } else {
+                    this.showScreenshotGuide();
+                }
+            }
+
+            async launchScreenshotApp() {
+                const screenshotBtn = document.getElementById('market-screenshot-btn');
+                const originalContent = screenshotBtn.innerHTML;
+
+                try {
+                    screenshotBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>启动中...';
+                    screenshotBtn.disabled = true;
+
+                    const response = await fetch('/api/launch-screenshot', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.showAlert('✅ FSRecorder截图工具启动成功！', 'success');
+                    } else {
+                        throw new Error(data.error || '启动失败');
+                    }
+                } catch (error) {
+                    this.showAlert('❌ 启动截图工具失败: ' + error.message, 'danger');
+                } finally {
+                    screenshotBtn.innerHTML = originalContent;
+                    screenshotBtn.disabled = false;
+                }
+            }
+
+            showScreenshotGuide() {
+                const modal = `
+                    <div class="modal fade" id="marketScreenshotGuideModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-camera text-primary me-2"></i>
+                                        截图操作指导
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        当前为在线环境，请手动进行截图操作
+                                    </div>
+
+                                    <h6>推荐截图方法：</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Windows:</strong> Win + Shift + S (截图工具)</li>
+                                        <li><strong>Mac:</strong> Cmd + Shift + 4 (区域截图)</li>
+                                        <li><strong>浏览器:</strong> 开发者工具 → 设备模拟 → 截图</li>
+                                    </ul>
+
+                                    <div class="alert alert-warning">
+                                        <strong>提示:</strong> 建议截图包含完整的调研报告和图表
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">我知道了</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modal);
+                const modalElement = new bootstrap.Modal(document.getElementById('marketScreenshotGuideModal'));
+                modalElement.show();
+
+                document.getElementById('marketScreenshotGuideModal').addEventListener('hidden.bs.modal', function() {
+                    this.remove();
+                });
+            }
+
+            showAlert(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 3000);
+            }
+        }
+
+        // 页面加载完成后初始化截图管理器
+        setTimeout(() => {
+            window.marketScreenshotManager = new MarketScreenshotManager();
+        }, 1000);
     </script>
 </body>
 </html>
