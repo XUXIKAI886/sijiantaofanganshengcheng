@@ -11,7 +11,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 
 const app = express();
-const PORT = 8080;
+const PORT = 8090;
 
 // 启用CORS
 app.use(cors());

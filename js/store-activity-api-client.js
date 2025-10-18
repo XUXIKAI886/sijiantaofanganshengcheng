@@ -63,9 +63,9 @@ class StoreActivityAPIClient {
         const protocol = window.location.protocol;
 
         // 1. 本地开发环境
-        if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '8080') {
+        if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '8090') {
             console.log('[店铺活动] 环境检测: 本地开发环境，使用本地代理');
-            return 'http://localhost:8080/api/chat/completions';
+            return 'http://localhost:8090/api/chat/completions';
         }
 
         // 2. Vercel/Netlify等Serverless平台
