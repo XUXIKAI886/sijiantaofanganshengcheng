@@ -31,6 +31,11 @@ class MarketAPIClient {
 
         // 使用唯一的Gemini 2.5 Flash Lite API
         this.currentApiKey = 'gemini-2.5-flash-lite';
+
+        // 启用健康检查功能
+        this.useHealthCheck = true;
+        this.healthCheckInitialized = false;
+
         this.config = this.getCurrentConfig();
 
         this.retryConfig = {
@@ -43,7 +48,37 @@ class MarketAPIClient {
         this.fallback = null;
         this.initFallback();
 
+        // 启动时进行健康检查
+        this.initHealthCheck();
+
         console.log(`[商圈分析] 使用API: ${this.apiConfigs[this.currentApiKey].name}`);
+    }
+
+    /**
+     * 初始化健康检查
+     */
+    async initHealthCheck() {
+        if (!this.useHealthCheck || this.healthCheckInitialized) {
+            return;
+        }
+
+        try {
+            if (typeof window.apiHealthChecker !== 'undefined') {
+                console.log('[商圈分析] 启动API健康检查...');
+                await window.apiHealthChecker.findAvailableURL();
+                this.healthCheckInitialized = true;
+
+                // 获取健康报告
+                const report = window.apiHealthChecker.getHealthReport();
+                if (report.isHealthy) {
+                    console.log(`[商圈分析] 健康检查完成，使用: ${report.currentURL.name}`);
+                } else {
+                    console.warn('[商圈分析] 健康检查警告：所有API端点不可用');
+                }
+            }
+        } catch (error) {
+            console.error('[商圈分析] 健康检查失败:', error);
+        }
     }
 
     /**
@@ -138,7 +173,7 @@ class MarketAPIClient {
     /**
      * 获取API基础URL - 智能检测环境并使用最佳代理方案
      * @param {string} originalURL - 原始API URL（直连地址）
-     * @returns {string} - 实际使用的API地址
+     * @returns {Promise<string>|string} - 实际使用的API地址
      */
     getAPIBaseURL(originalURL) {
         const hostname = window.location.hostname;
@@ -152,7 +187,6 @@ class MarketAPIClient {
         }
 
         // 2. Vercel/Netlify等支持Serverless Functions的平台
-        // 检测域名特征：.vercel.app, .netlify.app, 或自定义域名
         const serverlessPlatforms = [
             '.vercel.app',
             '.netlify.app',
@@ -162,26 +196,50 @@ class MarketAPIClient {
         const isServerlessPlatform = serverlessPlatforms.some(domain => hostname.includes(domain));
 
         if (isServerlessPlatform || (protocol === 'https:' && !hostname.includes('.github.io'))) {
-            // 使用相对路径，会自动使用Serverless Function
             console.log('[商圈分析] 环境检测: Serverless平台，使用API代理');
             return '/api/chat/completions';
         }
 
-        // 3. GitHub Pages或其他纯静态托管
-        if (hostname.includes('.github.io')) {
-            console.warn('[商圈分析] 环境检测: GitHub Pages，直连API（可能不稳定）');
-            console.warn('[商圈分析] 建议: 部署到Vercel以获得更好的稳定性');
+        // 3. GitHub Pages或其他纯静态托管 - 使用健康检查器
+        if (hostname.includes('.github.io') || protocol === 'file:' || protocol === 'https:') {
+            if (this.useHealthCheck && typeof window.apiHealthChecker !== 'undefined') {
+                console.log('[商圈分析] 环境检测: 使用健康检查器选择最佳API');
+                // 异步获取健康检查结果
+                return this.getHealthCheckedURL(originalURL);
+            }
         }
 
-        // 4. file:// 协议或其他情况
+        // 4. file:// 协议警告
         if (protocol === 'file:') {
             console.error('[商圈分析] 错误: 请勿直接打开HTML文件');
-            console.error('[商圈分析] 请启动开发服务器: npm start，然后访问 http://localhost:8080');
+            console.error('[商圈分析] 请启动开发服务器: npm start');
         }
 
         // 默认：直连原始API
         console.log('[商圈分析] 环境检测: 直连API模式');
         return originalURL;
+    }
+
+    /**
+     * 使用健康检查器获取最佳URL
+     * @param {string} fallbackURL - 降级URL
+     * @returns {Promise<string>} - 最佳API URL
+     */
+    async getHealthCheckedURL(fallbackURL) {
+        try {
+            const availableURL = await window.apiHealthChecker.getAPIBaseURL();
+
+            if (availableURL) {
+                console.log(`[商圈分析] 健康检查选择: ${availableURL}`);
+                return availableURL;
+            } else {
+                console.warn('[商圈分析] 健康检查失败，使用降级URL');
+                return fallbackURL;
+            }
+        } catch (error) {
+            console.error('[商圈分析] 健康检查器错误:', error);
+            return fallbackURL;
+        }
     }
     
     /**
