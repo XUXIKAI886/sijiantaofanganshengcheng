@@ -6,26 +6,27 @@
 class APIHealthChecker {
     constructor() {
         // 候选API URL列表（按优先级排序）
+        // 测试三个不同的base URL，每个都尝试标准的 /v1/chat/completions endpoint
         this.candidateURLs = [
             {
                 id: 'jeniya-base',
-                name: 'Jeniya API (基础路径)',
+                name: 'Jeniya API (根域名)',
                 baseURL: 'https://jeniya.top',
                 endpoint: '/v1/chat/completions',
                 priority: 1
             },
             {
                 id: 'jeniya-v1',
-                name: 'Jeniya API (v1路径)',
+                name: 'Jeniya API (v1子路径)',
                 baseURL: 'https://jeniya.top/v1',
-                endpoint: '/chat/completions',
+                endpoint: '/v1/chat/completions',
                 priority: 2
             },
             {
                 id: 'jeniya-full',
                 name: 'Jeniya API (完整路径)',
                 baseURL: 'https://jeniya.top/v1/chat/completions',
-                endpoint: '',
+                endpoint: '/v1/chat/completions',
                 priority: 3
             }
         ];
