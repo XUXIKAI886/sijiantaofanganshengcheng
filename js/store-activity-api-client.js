@@ -53,23 +53,45 @@ class StoreActivityAPIClient {
     }
 
     /**
-     * 获取API基础URL
-     * @param {string} originalURL - 原始URL
-     * @returns {string} - 处理后的URL
+     * 获取API基础URL - 智能检测环境并使用最佳代理方案
+     * @param {string} originalURL - 原始API URL
+     * @returns {string} - 实际使用的API地址
      */
     getAPIBaseURL(originalURL) {
-        // 检测是否在本地开发环境
-        const isLocalhost = window.location.hostname === 'localhost' ||
-                           window.location.hostname === '127.0.0.1' ||
-                           window.location.protocol === 'file:';
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const protocol = window.location.protocol;
 
-        if (isLocalhost && window.location.port === '8080') {
-            // 使用本地代理服务器
+        // 1. 本地开发环境
+        if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '8080') {
+            console.log('[店铺活动] 环境检测: 本地开发环境，使用本地代理');
             return 'http://localhost:8080/api/chat/completions';
-        } else {
-            // 使用原始API地址
-            return originalURL;
         }
+
+        // 2. Vercel/Netlify等Serverless平台
+        const serverlessPlatforms = ['.vercel.app', '.netlify.app', '.netlify.com'];
+        const isServerlessPlatform = serverlessPlatforms.some(domain => hostname.includes(domain));
+
+        if (isServerlessPlatform || (protocol === 'https:' && !hostname.includes('.github.io'))) {
+            console.log('[店铺活动] 环境检测: Serverless平台，使用API代理');
+            return '/api/chat/completions';
+        }
+
+        // 3. GitHub Pages警告
+        if (hostname.includes('.github.io')) {
+            console.warn('[店铺活动] 环境检测: GitHub Pages，直连API（可能不稳定）');
+            console.warn('[店铺活动] 建议: 部署到Vercel以获得更好的稳定性');
+        }
+
+        // 4. file://协议错误提示
+        if (protocol === 'file:') {
+            console.error('[店铺活动] 错误: 请勿直接打开HTML文件');
+            console.error('[店铺活动] 请启动开发服务器: npm start');
+        }
+
+        // 默认：直连API
+        console.log('[店铺活动] 环境检测: 直连API模式');
+        return originalURL;
     }
 
     /**

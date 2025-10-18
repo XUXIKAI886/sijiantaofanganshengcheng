@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API代理诊断工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .status-label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-family: 'Courier New', monospace;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .status-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .recommendation {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .recommendation-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .recommendation-list li {
+            padding: 8px 0;
+            color: #856404;
+            display: flex;
+            gap: 10px;
+        }
+
+        .recommendation-list li::before {
+            content: "→";
+            font-weight: bold;
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .test-button:active {
+            transform: translateY(0);
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 API代理诊断工具</h1>
+        <p class="subtitle">检测当前访问方式和API路由配置</p>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">🌐</span>
+                <span>当前访问信息</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">访问协议</span>
+                <span class="status-value" id="protocol"></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">主机名</span>
+                <span class="status-value" id="hostname"></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">端口</span>
+                <span class="status-value" id="port"></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">完整URL</span>
+                <span class="status-value" id="fullUrl"></span>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">⚙️</span>
+                <span>代理配置检测</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">是否本地环境</span>
+                <span class="status-value" id="isLocalhost"></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">端口检查 (8080)</span>
+                <span class="status-value" id="portCheck"></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">代理状态</span>
+                <span class="status-value" id="proxyStatus"></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">实际API地址</span>
+                <span class="status-value" id="actualApi"></span>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">🔌</span>
+                <span>Proxy Server状态</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">连接测试</span>
+                <span class="status-value" id="proxyServerStatus">检测中...</span>
+            </div>
+        </div>
+
+        <div id="recommendations"></div>
+
+        <button class="test-button" onclick="window.location.reload()">🔄 重新检测</button>
+    </div>
+
+    <script>
+        // 检测当前环境
+        function diagnose() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname || '(空)';
+            const port = window.location.port || '(空)';
+            const fullUrl = window.location.href;
+
+            // 判断是否本地环境
+            const isLocalhost = hostname === 'localhost' ||
+                               hostname === '127.0.0.1' ||
+                               protocol === 'file:';
+
+            // 判断端口是否为8080
+            const isPort8080 = port === '8080';
+
+            // 判断是否使用代理
+            const useProxy = isLocalhost && isPort8080;
+
+            // 实际API地址
+            const actualApi = useProxy
+                ? 'http://localhost:8080/api/chat/completions'
+                : 'https://jeniya.top/v1/chat/completions';
+
+            // 更新UI
+            document.getElementById('protocol').textContent = protocol;
+            document.getElementById('protocol').className = getProtocolClass(protocol);
+
+            document.getElementById('hostname').textContent = hostname;
+            document.getElementById('hostname').className = getHostnameClass(hostname);
+
+            document.getElementById('port').textContent = port;
+            document.getElementById('port').className = getPortClass(port);
+
+            document.getElementById('fullUrl').textContent = fullUrl;
+            document.getElementById('fullUrl').className = 'status-value status-info';
+
+            document.getElementById('isLocalhost').textContent = isLocalhost ? '是' : '否';
+            document.getElementById('isLocalhost').className = isLocalhost ? 'status-value status-ok' : 'status-value status-error';
+
+            document.getElementById('portCheck').textContent = isPort8080 ? '✓ 正确' : '✗ 错误';
+            document.getElementById('portCheck').className = isPort8080 ? 'status-value status-ok' : 'status-value status-error';
+
+            document.getElementById('proxyStatus').textContent = useProxy ? '✓ 启用' : '✗ 未启用';
+            document.getElementById('proxyStatus').className = useProxy ? 'status-value status-ok' : 'status-value status-error';
+
+            document.getElementById('actualApi').textContent = actualApi;
+            document.getElementById('actualApi').className = useProxy ? 'status-value status-ok' : 'status-value status-warning';
+
+            // 生成建议
+            generateRecommendations(protocol, hostname, port, useProxy);
+
+            // 测试proxy server
+            if (useProxy) {
+                testProxyServer();
+            } else {
+                document.getElementById('proxyServerStatus').textContent = '未使用代理';
+                document.getElementById('proxyServerStatus').className = 'status-value status-warning';
+            }
+        }
+
+        function getProtocolClass(protocol) {
+            if (protocol === 'http:' || protocol === 'https:') {
+                return 'status-value status-ok';
+            } else {
+                return 'status-value status-warning';
+            }
+        }
+
+        function getHostnameClass(hostname) {
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'status-value status-ok';
+            } else if (hostname === '(空)') {
+                return 'status-value status-error';
+            } else {
+                return 'status-value status-info';
+            }
+        }
+
+        function getPortClass(port) {
+            if (port === '8080') {
+                return 'status-value status-ok';
+            } else {
+                return 'status-value status-warning';
+            }
+        }
+
+        async function testProxyServer() {
+            try {
+                const response = await fetch('http://localhost:8080/api/check-screenshot-app', {
+                    method: 'GET',
+                    timeout: 3000
+                });
+
+                if (response.ok) {
+                    document.getElementById('proxyServerStatus').textContent = '✓ 运行中';
+                    document.getElementById('proxyServerStatus').className = 'status-value status-ok';
+                } else {
+                    document.getElementById('proxyServerStatus').textContent = '✗ 响应异常';
+                    document.getElementById('proxyServerStatus').className = 'status-value status-error';
+                }
+            } catch (error) {
+                document.getElementById('proxyServerStatus').textContent = '✗ 未运行';
+                document.getElementById('proxyServerStatus').className = 'status-value status-error';
+            }
+        }
+
+        function generateRecommendations(protocol, hostname, port, useProxy) {
+            const recommendationsDiv = document.getElementById('recommendations');
+
+            if (useProxy) {
+                recommendationsDiv.innerHTML = `
+                    <div class="recommendation" style="background: #d4edda; border-left-color: #28a745;">
+                        <div class="recommendation-title" style="color: #155724;">✅ 配置正确</div>
+                        <p style="color: #155724;">当前通过 <code>http://localhost:8080</code> 访问，API请求将通过proxy-server代理，这是推荐的方式。</p>
+                    </div>
+                `;
+            } else {
+                const recommendations = [];
+
+                if (protocol === 'file:') {
+                    recommendations.push('不要直接打开HTML文件，请通过<code>http://localhost:8080</code>访问');
+                    recommendations.push('启动proxy-server：在项目目录运行 <code>npm start</code> 或 <code>node proxy-server.js</code>');
+                }
+
+                if (hostname !== 'localhost' && hostname !== '127.0.0.1' && hostname !== '(空)') {
+                    recommendations.push('当前使用远程访问，需要确保服务器配置正确');
+                }
+
+                if (port !== '8080' && port !== '(空)') {
+                    recommendations.push('端口不是8080，请确保访问 <code>http://localhost:8080</code>');
+                }
+
+                if (protocol !== 'file:' && port === '(空)') {
+                    recommendations.push('未检测到端口，请在URL中明确指定端口 <code>:8080</code>');
+                }
+
+                recommendations.push('确保proxy-server.js正在运行（8080端口）');
+                recommendations.push('通过浏览器访问：<code>http://localhost:8080/index.html</code>');
+
+                recommendationsDiv.innerHTML = `
+                    <div class="recommendation">
+                        <div class="recommendation-title">⚠️ 需要修正</div>
+                        <ul class="recommendation-list">
+                            ${recommendations.map(r => `<li>${r}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        // 页面加载时执行诊断
+        diagnose();
+    </script>
+</body>
+</html>
