@@ -248,8 +248,8 @@ class DataStatisticsApp {
     async copyReportName() {
         try {
             const storeName = document.getElementById('store-name')?.value || '未命名店铺';
-            const reportName = `${storeName}-数据统计分析报告-${new Date().toLocaleDateString()}`;
-            
+            const reportName = `${storeName}数据统计分析报告`;
+
             await navigator.clipboard.writeText(reportName);
             this.showToast('报告名称已复制到剪贴板', 'success');
         } catch (error) {
@@ -270,7 +270,9 @@ class DataStatisticsApp {
             }
 
             const storeName = document.getElementById('store-name')?.value || '未命名店铺';
-            const fileName = `${storeName}-数据统计分析报告-${new Date().toLocaleDateString()}.html`;
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+            const fileName = `${storeName}数据统计分析报告_${dateStr}.html`;
 
             // 创建完整的HTML文档
             const htmlContent = `

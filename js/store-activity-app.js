@@ -215,9 +215,9 @@ class StoreActivityApp {
      */
     async copyReportName() {
         if (!this.storeData) return;
-        
-        const reportName = `${this.storeData.storeName}_活动方案_${new Date().toLocaleDateString('zh-CN')}`;
-        
+
+        const reportName = `${this.storeData.storeName}店铺活动方案`;
+
         try {
             await navigator.clipboard.writeText(reportName);
             this.showToast('报告名称已复制到剪贴板', 'success');
