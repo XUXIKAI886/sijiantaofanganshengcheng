@@ -1,6 +1,6 @@
 /**
- * Gemini 2.5 Flash Lite API 客户端
- * 负责与Gemini 2.5 Flash Lite API的通信，专业的品牌分析服务
+ * Gemini 3 Flash Preview API 客户端
+ * 负责与Gemini API的通信，专业的品牌分析服务
  */
 
 class APIClient {
@@ -8,10 +8,10 @@ class APIClient {
         this.config = {
             baseURL: this.getAPIBaseURL(),
             apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
-            model: 'gemini-2.5-flash-lite',
+            model: 'gemini-3-flash-preview',
             temperature: 0.8,
-            max_tokens: 16384, // 增加到16K tokens，与商圈调研模块一致
-            timeout: 360000 // 360秒超时，支持更复杂的分析
+            max_tokens: 16384,
+            timeout: 360000
         };
 
         // 初始化备用API
@@ -32,10 +32,10 @@ class APIClient {
         try {
             if (typeof APIFallback !== 'undefined') {
                 this.fallback = new APIFallback();
-                console.log('[品牌分析-Gemini 2.5 Lite] 备用API已初始化');
+                console.log('[品牌分析-Gemini] 备用API已初始化');
             }
         } catch (error) {
-            console.warn('[品牌分析-Gemini 2.5 Lite] 备用API初始化失败:', error);
+            console.warn('[品牌分析-Gemini] 备用API初始化失败:', error);
         }
     }
 

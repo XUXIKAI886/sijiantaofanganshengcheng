@@ -77,10 +77,10 @@ class DataStatisticsApp {
             copyBtn.addEventListener('click', () => this.copyReportName());
         }
 
-        // 导出报告按钮
-        const exportBtn = document.getElementById('export-report');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', () => this.exportReport());
+        // PDF下载按钮
+        const downloadPdfBtn = document.getElementById('download-pdf');
+        if (downloadPdfBtn) {
+            downloadPdfBtn.addEventListener('click', () => this.downloadPDF());
         }
 
         // 监听转化率自动计算
@@ -255,6 +255,48 @@ class DataStatisticsApp {
         } catch (error) {
             console.error('[数据统计分析] 复制失败:', error);
             this.showToast('复制失败，请手动复制', 'error');
+        }
+    }
+
+    /**
+     * 下载PDF报告
+     */
+    async downloadPDF() {
+        try {
+            const storeName = document.getElementById('store-name')?.value || '未命名店铺';
+
+            const reportContent = document.getElementById('report-content');
+            if (!reportContent || !reportContent.innerHTML.trim()) {
+                this.showToast('请先生成分析报告', 'warning');
+                return;
+            }
+
+            const safeName = storeName.replace(/[\\/:*?"<>|]/g, '_');
+            const filename = `${safeName}_数据统计分析`;
+            const extraData = {
+                title: `${storeName} 数据统计分析报告`,
+                subtitle: '呈尚策划 · 专业数据分析'
+            };
+
+            // 优先使用服务端PDF生成
+            if (window.pdfService) {
+                await window.pdfService.generatePDF('data-statistics', reportContent, filename, extraData);
+                console.log('[数据统计分析] 服务端PDF下载完成');
+                return;
+            }
+
+            // 降级到前端生成
+            if (window.pdfGenerator) {
+                await window.pdfGenerator.generatePDF('data-statistics', reportContent, filename, extraData);
+                console.log('[数据统计分析] 前端PDF下载完成');
+                return;
+            }
+
+            this.showToast('PDF生成器未加载，请刷新页面重试', 'error');
+
+        } catch (error) {
+            console.error('[数据统计分析] PDF生成失败:', error);
+            this.showToast('PDF生成失败: ' + error.message, 'error');
         }
     }
 

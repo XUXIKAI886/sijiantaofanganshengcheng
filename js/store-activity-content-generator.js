@@ -419,81 +419,95 @@ class StoreActivityContentGenerator {
      * @returns {string} - HTML格式
      */
     convertTextToHTML(text) {
-        console.log('[店铺活动-格式化] 开始转换文本为HTML:', text.substring(0, 200) + '...');
+        console.log('[店铺活动-格式化] 开始转换文本为HTML...');
+
+        // 如果内容已经是HTML格式（包含div或class属性），直接返回
+        if (text.includes('<div class="activity') || text.includes('<div class="plan')) {
+            console.log('[店铺活动-格式化] 检测到已是HTML格式，跳过转换');
+            return text;
+        }
 
         let html = text;
 
-        // 1. 处理主要标题 (## 开头)
-        html = html.replace(/^##\s*(.+)$/gm, '<h2 class="text-2xl font-bold text-orange-600 mt-8 mb-4 border-b-2 border-orange-200 pb-2">$1</h2>');
+        // 1. 处理主要标题 (## 开头，支持前后空格)
+        html = html.replace(/^[ \t]*##[ \t]+(.+?)[ \t]*$/gm, '<h2 class="text-2xl font-bold text-orange-600 mt-8 mb-4 border-b-2 border-orange-200 pb-2">$1</h2>');
 
         // 2. 处理次级标题 (### 开头)
-        html = html.replace(/^###\s*(.+)$/gm, '<h3 class="text-xl font-bold text-orange-500 mt-6 mb-3">$1</h3>');
+        html = html.replace(/^[ \t]*###[ \t]+(.+?)[ \t]*$/gm, '<h3 class="text-xl font-bold text-orange-500 mt-6 mb-3">$1</h3>');
 
-        // 3. 处理粗体标题 (**文字:** 格式)
-        html = html.replace(/\*\*([^*]+)[:：]\*\*/g, '<h4 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1:</h4>');
+        // 3. 处理四级标题 (#### 开头)
+        html = html.replace(/^[ \t]*####[ \t]+(.+?)[ \t]*$/gm, '<h4 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h4>');
 
-        // 4. 处理粗体文字 (**文字**)
-        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-gray-800">$1</strong>');
+        // 4. 处理粗体标题 (**文字:** 或 **文字：** 格式)
+        html = html.replace(/\*\*([^*\n]+?)[：:]\*\*/g, '<h4 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1:</h4>');
 
-        // 5. 处理数字列表 (1. 2. 3. 开头)
-        html = html.replace(/^(\d+)\.\s*(.+)$/gm, '<div class="numbered-item mb-2"><span class="inline-block w-6 h-6 bg-orange-500 text-white text-sm rounded-full text-center mr-2">$1</span>$2</div>');
+        // 5. 处理粗体文字 (**文字**)
+        html = html.replace(/\*\*([^*\n]+?)\*\*/g, '<strong class="font-semibold text-gray-800">$1</strong>');
 
-        // 6. 处理破折号列表 (- 开头)
-        html = html.replace(/^-\s*(.+)$/gm, '<li class="mb-2 ml-4">$1</li>');
+        // 6. 处理斜体文字 (*文字*)
+        html = html.replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, '<em class="italic text-gray-600">$1</em>');
 
-        // 7. 处理星号列表 (* 开头)
-        html = html.replace(/^\*\s*(.+)$/gm, '<li class="mb-2 ml-4">$1</li>');
+        // 7. 处理数字列表 (1. 2. 3. 开头)
+        html = html.replace(/^[ \t]*(\d+)\.[ \t]+(.+?)[ \t]*$/gm, '<div class="numbered-item mb-2 flex items-start"><span class="inline-flex items-center justify-center w-6 h-6 bg-orange-500 text-white text-sm rounded-full mr-2 flex-shrink-0">$1</span><span>$2</span></div>');
 
-        // 8. 包装连续的列表项
-        html = html.replace(/(<li[^>]*>.*?<\/li>\s*)+/gs, '<ul class="list-disc list-inside space-y-1 mb-4">$&</ul>');
+        // 8. 处理破折号列表 (- 开头)
+        html = html.replace(/^[ \t]*-[ \t]+(.+?)[ \t]*$/gm, '<li class="mb-2 ml-4 text-gray-700">$1</li>');
 
-        // 9. 处理段落 (连续的非HTML行)
+        // 9. 处理星号列表 (* 开头，但不是粗体)
+        html = html.replace(/^[ \t]*\*[ \t]+(.+?)[ \t]*$/gm, '<li class="mb-2 ml-4 text-gray-700">$1</li>');
+
+        // 10. 包装连续的列表项为ul
+        html = html.replace(/((?:<li[^>]*>.*?<\/li>\s*)+)/gs, '<ul class="list-disc list-inside space-y-1 mb-4">$1</ul>');
+
+        // 11. 处理段落 - 按行处理
         const lines = html.split('\n');
         let processedLines = [];
         let inParagraph = false;
+        let paragraphContent = [];
 
-        lines.forEach(line => {
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
             const trimmedLine = line.trim();
 
-            // 跳过空行
+            // 空行结束段落
             if (!trimmedLine) {
-                if (inParagraph) {
-                    processedLines.push('</p>');
+                if (inParagraph && paragraphContent.length > 0) {
+                    processedLines.push('<p class="mb-3 text-gray-700 leading-relaxed">' + paragraphContent.join(' ') + '</p>');
+                    paragraphContent = [];
                     inParagraph = false;
                 }
-                processedLines.push('');
-                return;
+                continue;
             }
 
-            // 检查是否是HTML标签行
-            if (trimmedLine.match(/^<[^>]+>/)) {
-                if (inParagraph) {
-                    processedLines.push('</p>');
+            // HTML标签行直接添加
+            if (trimmedLine.match(/^<[a-zA-Z]/) || trimmedLine.match(/<\/[a-zA-Z]+>$/)) {
+                if (inParagraph && paragraphContent.length > 0) {
+                    processedLines.push('<p class="mb-3 text-gray-700 leading-relaxed">' + paragraphContent.join(' ') + '</p>');
+                    paragraphContent = [];
                     inParagraph = false;
                 }
                 processedLines.push(line);
             } else {
-                // 普通文本行
-                if (!inParagraph) {
-                    processedLines.push('<p class="mb-3 text-gray-700 leading-relaxed">');
-                    inParagraph = true;
-                }
-                processedLines.push(trimmedLine);
+                // 普通文本行，收集到段落中
+                paragraphContent.push(trimmedLine);
+                inParagraph = true;
             }
-        });
+        }
 
-        // 关闭最后的段落
-        if (inParagraph) {
-            processedLines.push('</p>');
+        // 处理最后的段落
+        if (inParagraph && paragraphContent.length > 0) {
+            processedLines.push('<p class="mb-3 text-gray-700 leading-relaxed">' + paragraphContent.join(' ') + '</p>');
         }
 
         html = processedLines.join('\n');
 
-        // 10. 清理多余的空白和重复标签
-        html = html.replace(/\n\s*\n\s*\n/g, '\n\n');
-        html = html.replace(/<\/p>\s*<p[^>]*>/g, '</p>\n<p class="mb-3 text-gray-700 leading-relaxed">');
+        // 12. 清理多余的空白
+        html = html.replace(/\n{3,}/g, '\n\n');
 
-        console.log('[店铺活动-格式化] HTML转换完成:', html.substring(0, 300) + '...');
+        // 13. 清理空的段落标签
+        html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
+
+        console.log('[店铺活动-格式化] HTML转换完成');
 
         return html;
     }

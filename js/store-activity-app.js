@@ -59,19 +59,25 @@ class StoreActivityApp {
         if (form) {
             form.addEventListener('submit', (e) => this.handleFormSubmit(e));
         }
-        
+
         // 复制报告名称按钮
         const copyBtn = document.getElementById('copy-report-name');
         if (copyBtn) {
             copyBtn.addEventListener('click', () => this.copyReportName());
         }
-        
+
+        // PDF下载按钮
+        const downloadPdfBtn = document.getElementById('download-pdf');
+        if (downloadPdfBtn) {
+            downloadPdfBtn.addEventListener('click', () => this.downloadPDF());
+        }
+
         // 新建分析按钮
         const newBtn = document.getElementById('new-analysis');
         if (newBtn) {
             newBtn.addEventListener('click', () => this.newAnalysis());
         }
-        
+
         // 主题切换事件
         document.querySelectorAll('[data-theme]').forEach(element => {
             element.addEventListener('click', (e) => {
@@ -226,7 +232,52 @@ class StoreActivityApp {
             this.showToast('复制失败，请手动复制', 'error');
         }
     }
-    
+
+    /**
+     * 下载PDF报告
+     */
+    async downloadPDF() {
+        try {
+            if (!this.storeData || !this.storeData.storeName) {
+                this.showToast('请先生成活动方案', 'warning');
+                return;
+            }
+
+            const reportContent = document.getElementById('report-content');
+            if (!reportContent) {
+                this.showToast('报告内容未找到', 'error');
+                return;
+            }
+
+            const safeName = this.storeData.storeName.replace(/[\\/:*?"<>|]/g, '_');
+            const filename = `${safeName}_店铺活动方案`;
+            const extraData = {
+                title: `${this.storeData.storeName} 店铺活动方案`,
+                subtitle: this.storeData.businessCategory || '呈尚策划 · 专业活动方案'
+            };
+
+            // 优先使用服务端PDF生成
+            if (window.pdfService) {
+                await window.pdfService.generatePDF('store-activity', reportContent, filename, extraData);
+                console.log('[店铺活动] 服务端PDF下载完成');
+                return;
+            }
+
+            // 降级到前端生成
+            if (window.pdfGenerator) {
+                await window.pdfGenerator.generatePDF('store-activity', reportContent, filename, extraData);
+                console.log('[店铺活动] 前端PDF下载完成');
+                return;
+            }
+
+            this.showToast('PDF生成器未加载，请刷新页面重试', 'error');
+
+        } catch (error) {
+            console.error('[店铺活动] PDF生成失败:', error);
+            this.showToast('PDF生成失败: ' + error.message, 'error');
+        }
+    }
+
     /**
      * 新建分析
      */

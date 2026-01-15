@@ -9,9 +9,10 @@
     "install-deps": "npm install express cors node-fetch"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "node-fetch": "^2.6.7"
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "puppeteer": "^24.35.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

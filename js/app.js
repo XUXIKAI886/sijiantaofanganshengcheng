@@ -65,6 +65,12 @@ class BrandAnalysisApp {
             copyNameBtn.addEventListener('click', () => this.copyReportName());
         }
 
+        // PDF下载按钮
+        const downloadPdfBtn = document.getElementById('brand-downloadPdfBtn');
+        if (downloadPdfBtn) {
+            downloadPdfBtn.addEventListener('click', () => this.downloadPDF());
+        }
+
         // 初始化主题选择器
         this.initThemeSelector();
 
@@ -452,6 +458,51 @@ class BrandAnalysisApp {
         } catch (error) {
             console.error('[品牌分析] 复制失败:', error);
             this.showError('复制失败，请手动复制');
+        }
+    }
+
+    /**
+     * 下载PDF报告
+     */
+    async downloadPDF() {
+        try {
+            if (!this.storeData || !this.storeData.storeName) {
+                this.showError('请先生成分析报告');
+                return;
+            }
+
+            const reportContent = document.getElementById('brand-report-content');
+            if (!reportContent) {
+                this.showError('报告内容未找到');
+                return;
+            }
+
+            const safeName = this.storeData.storeName.replace(/[\\/:*?"<>|]/g, '_');
+            const filename = `${safeName}_品牌定位分析`;
+            const extraData = {
+                title: `${this.storeData.storeName} 品牌定位分析报告`,
+                subtitle: this.storeData.category || '呈尚策划 · 专业品牌分析'
+            };
+
+            // 优先使用服务端PDF生成
+            if (window.pdfService) {
+                await window.pdfService.generatePDF('brand', reportContent, filename, extraData);
+                console.log('[品牌分析] 服务端PDF下载完成');
+                return;
+            }
+
+            // 降级到前端生成
+            if (window.pdfGenerator) {
+                await window.pdfGenerator.generatePDF('brand', reportContent, filename, extraData);
+                console.log('[品牌分析] 前端PDF下载完成');
+                return;
+            }
+
+            this.showError('PDF生成器未加载，请刷新页面重试');
+
+        } catch (error) {
+            console.error('[品牌分析] PDF生成失败:', error);
+            this.showError('PDF生成失败: ' + error.message);
         }
     }
 

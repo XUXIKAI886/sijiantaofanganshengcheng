@@ -15,7 +15,9 @@
     <!-- 自定义样式 -->
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/store-activity.css">
-    
+    <!-- PDF导出专用样式 -->
+    <link rel="stylesheet" href="css/pdf-styles.css?v=20250114-01">
+
     <!-- Chart.js 用于数据可视化 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
 </head>
@@ -170,6 +172,10 @@
                             活动方案报告
                         </h2>
                         <div class="flex gap-2">
+                            <button id="download-pdf" class="btn btn-success btn-sm">
+                                <i class="fas fa-file-pdf mr-1"></i>
+                                下载PDF
+                            </button>
                             <button id="copy-report-name" class="btn btn-outline btn-sm">
                                 <i class="fas fa-copy mr-1"></i>
                                 复制名称
@@ -194,6 +200,9 @@
         </div>
     </div>
 
+    <!-- html2pdf.js - PDF生成库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <!-- JavaScript 模块 -->
     <script src="js/store-activity-app.js"></script>
     <script src="js/store-activity-api-client.js"></script>
@@ -201,6 +210,10 @@
     <script src="js/store-activity-content-generator.js"></script>
     <script src="js/store-activity-report-renderer.js"></script>
     <script src="templates/store-activity-prompt-template.js"></script>
+
+    <!-- PDF生成器 -->
+    <script src="js/pdf-generator.js?v=20250114-01"></script>
+    <script src="js/pdf-service.js?v=20250115-01"></script>
 
     <!-- 截图功能 -->
     <script>

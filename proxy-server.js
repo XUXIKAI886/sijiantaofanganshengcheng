@@ -9,20 +9,27 @@ const fetch = require('node-fetch');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
+const puppeteer = require('puppeteer');
 
 const app = express();
 const PORT = 8090;
 
 // 启用CORS
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // 静态文件服务
 app.use(express.static(__dirname));
 
 // API配置映射
 const API_CONFIGS = {
-    // Gemini 2.5 Flash Lite (jeniya.top) - 统一API
+    // Gemini 3 Flash Preview (jeniya.top) - 最新模型
+    'gemini-3-flash-preview': {
+        url: 'https://jeniya.top/v1/chat/completions',
+        defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
+    },
+    // Gemini 2.5 Flash Lite (jeniya.top) - 备用模型
     'gemini-2.5-flash-lite': {
         url: 'https://jeniya.top/v1/chat/completions',
         defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
@@ -170,6 +177,76 @@ app.get('/api/check-screenshot-app', (req, res) => {
         available: exists,
         path: fsRecorderPath
     });
+});
+
+// PDF生成端点 - 使用Puppeteer服务端渲染
+app.post('/api/generate-pdf', async (req, res) => {
+    console.log('📄 收到PDF生成请求');
+    let browser = null;
+
+    try {
+        const { html, filename, options } = req.body;
+
+        if (!html) {
+            return res.status(400).json({ success: false, message: 'HTML内容不能为空' });
+        }
+
+        console.log('🚀 启动Puppeteer浏览器...');
+        browser = await puppeteer.launch({
+            headless: 'new',
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+        });
+
+        const page = await browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
+
+        console.log('📝 加载HTML内容...');
+        await page.setContent(html, { waitUntil: ['load', 'domcontentloaded', 'networkidle0'], timeout: 30000 });
+
+        // 等待字体加载
+        await page.evaluate(() => document.fonts?.ready || new Promise(r => setTimeout(r, 1000)));
+        await new Promise(r => setTimeout(r, 500));
+
+        console.log('📄 生成PDF...');
+
+        // 获取页面实际高度，确保完整渲染
+        const contentHeight = await page.evaluate(() => {
+            const body = document.body;
+            const html = document.documentElement;
+            return Math.max(
+                body.scrollHeight, body.offsetHeight, body.clientHeight,
+                html.scrollHeight, html.offsetHeight, html.clientHeight
+            );
+        });
+
+        // 添加额外边距确保内容不被截断
+        const totalHeight = contentHeight + 200;
+        console.log('📏 页面高度:', contentHeight, '总高度:', totalHeight);
+
+        const pdfBuffer = await page.pdf({
+            width: '210mm',
+            height: `${totalHeight}px`,
+            margin: { top: '8mm', right: '8mm', bottom: '8mm', left: '8mm' },
+            printBackground: true
+        });
+
+        console.log('✅ PDF生成成功，大小:', pdfBuffer.length, '字节');
+
+        // 确保以二进制方式发送
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Length', pdfBuffer.length);
+        res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename || 'report')}.pdf"`);
+        res.end(Buffer.from(pdfBuffer));
+
+    } catch (error) {
+        console.error('❌ PDF生成失败:', error);
+        res.status(500).json({ success: false, message: error.message || 'PDF生成失败' });
+    } finally {
+        if (browser) {
+            await browser.close();
+            console.log('🔒 浏览器已关闭');
+        }
+    }
 });
 
 // 启动服务器
