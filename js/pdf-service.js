@@ -207,8 +207,22 @@ class PDFService {
      */
     getEmbeddedStyles(moduleInfo) {
         return `
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 400;
+    src: url('https://fonts.gstatic.com/ea/notosanssc/v1/NotoSansSC-Regular.otf') format('opentype');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 700;
+    src: url('https://fonts.gstatic.com/ea/notosanssc/v1/NotoSansSC-Bold.otf') format('opentype');
+    font-display: swap;
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Microsoft YaHei', sans-serif; font-size: 12px; line-height: 1.6; color: #333; background: #fff; }
+body { font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif; font-size: 12px; line-height: 1.6; color: #333; background: #fff; }
 .pdf-container { max-width: 210mm; margin: 0 auto; padding: 8px; }
 .pdf-header { color: white; padding: 18px 22px; border-radius: 6px; margin-bottom: 12px; }
 .header-content { display: flex; justify-content: space-between; align-items: center; }
