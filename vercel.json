@@ -2,7 +2,10 @@
   "version": 2,
   "functions": {
     "api/generate-pdf.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": [
+        "fonts/**"
+      ]
     }
   },
   "headers": [

@@ -79,7 +79,7 @@ export default async function handler(req, res) {
 
     try {
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-        const { html, filename } = body;
+        const { html, filename, options } = body;
 
         if (!html) {
             return res.status(400).json({ success: false, message: 'HTML内容不能为空' });
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
 
         const page = await browser.newPage();
         await page.emulateMediaType('screen');
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
 
         await page.setContent(htmlWithFonts, {
             waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
@@ -119,62 +119,21 @@ export default async function handler(req, res) {
         await page.evaluate(() => document.fonts?.ready || new Promise(r => setTimeout(r, 1000)));
         await new Promise(r => setTimeout(r, 300));
 
-        // 获取页面实际高度，确保完整渲染
-        const contentHeight = await page.evaluate(() => {
-            const bodyEl = document.body;
-            const htmlEl = document.documentElement;
-            return Math.max(
-                bodyEl.scrollHeight, bodyEl.offsetHeight, bodyEl.clientHeight,
-                htmlEl.scrollHeight, htmlEl.offsetHeight, htmlEl.clientHeight
-            );
+        const fontReady = await page.evaluate(() => {
+            if (!document.fonts) {
+                return false;
+            }
+            return document.fonts.check('12px "Noto Sans SC"');
         });
-
-        const totalHeight = contentHeight + 200;
-
-        const pngBuffer = await page.screenshot({ fullPage: true, type: 'png' });
-        const imageBase64 = pngBuffer.toString('base64');
-        const imageHtml = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #fff; }
-        img { display: block; width: 100%; height: auto; }
-    </style>
-</head>
-<body>
-    <img src="data:image/png;base64,${imageBase64}" alt="report" />
-</body>
-</html>`;
-
-        await page.setContent(imageHtml, {
-            waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
-            timeout: 30000
-        });
-
-        await page.waitForFunction(() => {
-            const img = document.images && document.images[0];
-            return img && img.complete;
-        }, { timeout: 10000 }).catch(() => {});
-
-        const imageHeight = await page.evaluate(() => {
-            const bodyEl = document.body;
-            const htmlEl = document.documentElement;
-            return Math.max(
-                bodyEl.scrollHeight, bodyEl.offsetHeight, bodyEl.clientHeight,
-                htmlEl.scrollHeight, htmlEl.offsetHeight, htmlEl.clientHeight
-            );
-        });
-
-        const pdfHeight = Math.max(imageHeight, totalHeight, 1123);
+        if (!fontReady) {
+            console.warn('[Vercel PDF] 字体未生效，可能导致中文缺失');
+        }
 
         const pdfBuffer = await page.pdf({
-            width: '794px',
-            height: `${pdfHeight}px`,
-            margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
-            printBackground: true
+            format: 'A4',
+            margin: { top: '15mm', right: '15mm', bottom: '15mm', left: '15mm' },
+            printBackground: true,
+            ...options
         });
 
         res.setHeader('Content-Type', 'application/pdf');
