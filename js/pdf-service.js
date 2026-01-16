@@ -1,12 +1,14 @@
 /**
- * PDF服务端生成模块 v1.0
+ * PDF服务端生成模块 v1.1
  * 负责与后端Puppeteer API通信，请求生成高质量PDF
+ * v1.1: 添加Vercel环境检测，云端环境自动使用前端生成器
  */
 
 class PDFService {
     constructor() {
         this.apiEndpoint = '/api/generate-pdf';
         this.isGenerating = false;
+        this.isVercelEnvironment = this.detectVercelEnvironment();
 
         this.moduleConfig = {
             'brand': {
@@ -33,6 +35,18 @@ class PDFService {
     }
 
     /**
+     * 检测是否为Vercel环境
+     * Vercel环境特征：非localhost、非127.0.0.1、包含vercel.app或自定义域名
+     */
+    detectVercelEnvironment() {
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        const isVercel = !isLocalhost;
+        console.log(`[PDF Service] 环境检测: ${isVercel ? 'Vercel/云端' : '本地'} (${hostname})`);
+        return isVercel;
+    }
+
+    /**
      * 生成PDF
      * @param {string} moduleType - 模块类型
      * @param {HTMLElement} contentElement - 报告内容DOM元素
@@ -43,6 +57,12 @@ class PDFService {
         if (this.isGenerating) {
             alert('正在生成PDF，请稍候...');
             return;
+        }
+
+        // Vercel环境直接使用前端生成器，避免Serverless函数的限制
+        if (this.isVercelEnvironment) {
+            console.log('[PDF Service] Vercel环境，使用前端PDF生成器');
+            return this.useClientGenerator(moduleType, contentElement, filename, extraData);
         }
 
         this.isGenerating = true;
@@ -93,6 +113,23 @@ class PDFService {
         } finally {
             this.isGenerating = false;
             this.hideLoading();
+        }
+    }
+
+    /**
+     * 使用前端PDF生成器（Vercel环境专用）
+     */
+    async useClientGenerator(moduleType, contentElement, filename, extraData) {
+        if (!window.pdfGenerator || typeof window.pdfGenerator.generatePDF !== 'function') {
+            alert('PDF生成器未加载，请刷新页面重试');
+            return;
+        }
+
+        try {
+            await window.pdfGenerator.generatePDF(moduleType, contentElement, filename, extraData);
+        } catch (error) {
+            console.error('[PDF Service] 前端PDF生成失败:', error);
+            alert('PDF生成失败: ' + error.message);
         }
     }
 
@@ -281,4 +318,4 @@ body { font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', 'Hiragino 
 
 // 全局实例
 window.pdfService = new PDFService();
-console.log('[PDF Service] 服务端PDF生成模块 v1.0 已加载');
+console.log('[PDF Service] 服务端PDF生成模块 v1.1 已加载');
