@@ -3,9 +3,7 @@
   "functions": {
     "api/generate-pdf.js": {
       "maxDuration": 60,
-      "includeFiles": [
-        "fonts/**"
-      ]
+      "includeFiles": "fonts/**"
     }
   },
   "headers": [
