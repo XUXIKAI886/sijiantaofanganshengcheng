@@ -8,6 +8,8 @@
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 
+chromium.setGraphicsMode = false;
+
 export default async function handler(req, res) {
     // 只允许POST请求
     if (req.method !== 'POST') {
@@ -51,12 +53,16 @@ export default async function handler(req, res) {
         });
 
         const page = await browser.newPage();
+        await page.emulateMediaType('screen');
         await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
 
         await page.setContent(html, {
             waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
             timeout: 30000
         });
+
+        // 等待字体与样式完成加载
+        await page.waitForFunction(() => document.fonts && document.fonts.status === 'loaded', { timeout: 10000 }).catch(() => {});
 
         // 等待字体加载
         await page.evaluate(() => document.fonts?.ready || new Promise(r => setTimeout(r, 1000)));
