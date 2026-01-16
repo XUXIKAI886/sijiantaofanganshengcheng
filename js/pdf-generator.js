@@ -1,6 +1,6 @@
 /**
- * PDF生成器 v3.0
- * 修复空白页面问题 - 使用可见元素渲染
+ * PDF生成器 v4.0
+ * 修复空白页面问题 - 使用absolute定位确保html2canvas正确捕获
  */
 
 class PDFGenerator {
@@ -47,11 +47,11 @@ class PDFGenerator {
         document.body.appendChild(loadingDiv);
 
         try {
-            // 创建PDF内容容器 - 关键：使用可见样式
+            // 创建PDF内容容器 - 使用absolute定位，确保在视口内可见
             const pdfDiv = document.createElement('div');
             pdfDiv.id = 'pdf-content-wrapper';
             pdfDiv.style.cssText = `
-                position: fixed;
+                position: absolute;
                 top: 0;
                 left: 0;
                 width: 794px;
@@ -59,6 +59,7 @@ class PDFGenerator {
                 z-index: 99998;
                 padding: 30px;
                 box-sizing: border-box;
+                overflow: visible;
             `;
 
             // 构建PDF内容
@@ -106,22 +107,33 @@ class PDFGenerator {
 
             document.body.appendChild(pdfDiv);
 
-            // 等待渲染
-            await new Promise(r => setTimeout(r, 500));
+            // 滚动到顶部确保内容可见
+            window.scrollTo(0, 0);
 
-            // PDF配置
+            // 等待渲染和图片加载
+            await new Promise(r => setTimeout(r, 800));
+
+            console.log('[PDF] pdfDiv尺寸:', pdfDiv.offsetWidth, 'x', pdfDiv.offsetHeight);
+            console.log('[PDF] pdfDiv内容长度:', pdfDiv.innerHTML.length);
+
+            // PDF配置 - 优化html2canvas设置
             const opt = {
                 margin: 10,
                 filename: `${filename}_${this.getDateStr()}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
+                image: { type: 'jpeg', quality: 0.95 },
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
-                    logging: true,  // 开启日志便于调试
+                    logging: true,
                     allowTaint: true,
-                    scrollY: 0,
                     scrollX: 0,
-                    windowWidth: 794
+                    scrollY: 0,
+                    windowWidth: 794,
+                    windowHeight: pdfDiv.offsetHeight + 100,
+                    x: 0,
+                    y: 0,
+                    width: 794,
+                    height: pdfDiv.offsetHeight
                 },
                 jsPDF: {
                     unit: 'mm',
@@ -163,4 +175,4 @@ class PDFGenerator {
 }
 
 window.pdfGenerator = new PDFGenerator();
-console.log('[PDF生成器] v3.0 已加载');
+console.log('[PDF生成器] v4.0 已加载');
