@@ -1,9 +1,12 @@
 /**
- * Vercel Serverless Function - PDF生成
- * 使用Puppeteer在服务端渲染HTML并输出PDF
+ * Vercel 无服务器函数(Serverless Function) - PDF生成
+ * 使用无头浏览器(Headless Browser) Puppeteer 在服务端渲染HTML并输出PDF
+ *
+ * 说明：Vercel 环境需使用 @sparticuz/chromium + puppeteer-core
  */
 
-import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
 export default async function handler(req, res) {
     // 只允许POST请求
@@ -31,9 +34,20 @@ export default async function handler(req, res) {
             return res.status(400).json({ success: false, message: 'HTML内容不能为空' });
         }
 
+        const executablePath = await chromium.executablePath();
+
+        if (!executablePath) {
+            return res.status(500).json({
+                success: false,
+                message: '未找到Chromium可执行文件，请检查服务端环境配置'
+            });
+        }
+
         browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath,
+            headless: chromium.headless
         });
 
         const page = await browser.newPage();

@@ -9,10 +9,12 @@
     "install-deps": "npm install express cors node-fetch"
   },
   "dependencies": {
+    "@sparticuz/chromium": "^143.0.4",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "node-fetch": "^2.6.7",
-    "puppeteer": "^24.35.0"
+    "puppeteer": "^24.35.0",
+    "puppeteer-core": "^24.35.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
