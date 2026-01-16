@@ -7,8 +7,57 @@
 
 import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
+import fs from 'node:fs';
+import path from 'node:path';
 
 chromium.setGraphicsMode = false;
+
+function loadFontBase64(fileName) {
+    try {
+        const fontPath = path.join(process.cwd(), 'fonts', fileName);
+        if (!fs.existsSync(fontPath)) {
+            return null;
+        }
+        return fs.readFileSync(fontPath).toString('base64');
+    } catch (error) {
+        console.error('[Vercel PDF] 字体读取失败:', error);
+        return null;
+    }
+}
+
+function injectFontCSS(html) {
+    const regular = loadFontBase64('NotoSansSC-Regular.otf');
+    const bold = loadFontBase64('NotoSansSC-Bold.otf');
+
+    if (!regular && !bold) {
+        return html;
+    }
+
+    const fontCSS = `
+<style>
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 400;
+    src: url('data:font/otf;base64,${regular || ''}') format('opentype');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 700;
+    src: url('data:font/otf;base64,${bold || regular || ''}') format('opentype');
+    font-display: swap;
+}
+body { font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', Arial, sans-serif; }
+</style>`;
+
+    if (html.includes('</head>')) {
+        return html.replace('</head>', `${fontCSS}</head>`);
+    }
+
+    return `${fontCSS}${html}`;
+}
 
 export default async function handler(req, res) {
     // 只允许POST请求
@@ -30,11 +79,13 @@ export default async function handler(req, res) {
 
     try {
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-        const { html, filename, options } = body;
+        const { html, filename } = body;
 
         if (!html) {
             return res.status(400).json({ success: false, message: 'HTML内容不能为空' });
         }
+
+        const htmlWithFonts = injectFontCSS(html);
 
         const executablePath = await chromium.executablePath();
 
@@ -54,9 +105,9 @@ export default async function handler(req, res) {
 
         const page = await browser.newPage();
         await page.emulateMediaType('screen');
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
 
-        await page.setContent(html, {
+        await page.setContent(htmlWithFonts, {
             waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
             timeout: 30000
         });
@@ -80,12 +131,50 @@ export default async function handler(req, res) {
 
         const totalHeight = contentHeight + 200;
 
+        const pngBuffer = await page.screenshot({ fullPage: true, type: 'png' });
+        const imageBase64 = pngBuffer.toString('base64');
+        const imageHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #fff; }
+        img { display: block; width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <img src="data:image/png;base64,${imageBase64}" alt="report" />
+</body>
+</html>`;
+
+        await page.setContent(imageHtml, {
+            waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
+            timeout: 30000
+        });
+
+        await page.waitForFunction(() => {
+            const img = document.images && document.images[0];
+            return img && img.complete;
+        }, { timeout: 10000 }).catch(() => {});
+
+        const imageHeight = await page.evaluate(() => {
+            const bodyEl = document.body;
+            const htmlEl = document.documentElement;
+            return Math.max(
+                bodyEl.scrollHeight, bodyEl.offsetHeight, bodyEl.clientHeight,
+                htmlEl.scrollHeight, htmlEl.offsetHeight, htmlEl.clientHeight
+            );
+        });
+
+        const pdfHeight = Math.max(imageHeight, totalHeight, 1123);
+
         const pdfBuffer = await page.pdf({
-            width: '210mm',
-            height: `${totalHeight}px`,
-            margin: { top: '8mm', right: '8mm', bottom: '8mm', left: '8mm' },
-            printBackground: true,
-            ...options
+            width: '794px',
+            height: `${pdfHeight}px`,
+            margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
+            printBackground: true
         });
 
         res.setHeader('Content-Type', 'application/pdf');
