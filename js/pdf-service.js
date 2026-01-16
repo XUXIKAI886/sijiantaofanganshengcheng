@@ -86,7 +86,10 @@ class PDFService {
 
         } catch (error) {
             console.error('[PDF Service] 生成失败:', error);
-            alert('PDF生成失败: ' + error.message);
+            const fallbackSuccess = await this.tryClientFallback(moduleType, contentElement, filename, extraData, error);
+            if (!fallbackSuccess) {
+                alert('PDF生成失败: ' + error.message);
+            }
         } finally {
             this.isGenerating = false;
             this.hideLoading();
@@ -105,6 +108,25 @@ class PDFService {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+    }
+
+    /**
+     * 服务端失败时降级为前端PDF生成
+     */
+    async tryClientFallback(moduleType, contentElement, filename, extraData, error) {
+        if (!window.pdfGenerator || typeof window.pdfGenerator.generatePDF !== 'function') {
+            return false;
+        }
+
+        console.warn('[PDF Service] 服务端失败，尝试前端生成:', error?.message || error);
+
+        try {
+            await window.pdfGenerator.generatePDF(moduleType, contentElement, filename, extraData);
+            return true;
+        } catch (fallbackError) {
+            console.error('[PDF Service] 前端PDF生成失败:', fallbackError);
+            return false;
+        }
     }
 
     /**

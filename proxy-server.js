@@ -24,17 +24,12 @@ app.use(express.static(__dirname));
 
 // API配置映射
 const API_CONFIGS = {
-    // Gemini 3 Flash Preview (jeniya.top) - 最新模型
-    'gemini-3-flash-preview': {
-        url: 'https://jeniya.top/v1/chat/completions',
-        defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
-    },
-    // Gemini 2.5 Flash Lite (jeniya.top) - 备用模型
+    // Gemini 2.5 Flash Lite (jeniya.top) - 统一模型
     'gemini-2.5-flash-lite': {
         url: 'https://jeniya.top/v1/chat/completions',
         defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
     },
-    // Gemini Pro (annyun.cn) - 店铺活动方案模块支持
+    // Gemini Pro (annyun.cn) - 备用模型
     'gemini-pro': {
         url: 'https://api.annyun.cn/v1/chat/completions',
         defaultKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'

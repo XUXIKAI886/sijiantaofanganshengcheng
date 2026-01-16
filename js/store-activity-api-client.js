@@ -1,21 +1,21 @@
 /**
  * 店铺活动方案生成 - API客户端
- * 负责与Gemini 3 Flash Preview API的通信
+ * 负责与Gemini 2.5 Flash Lite API的通信
  */
 
 class StoreActivityAPIClient {
     constructor() {
-        // API配置 - 使用Gemini 3 Flash Preview
+        // API配置 - 使用Gemini 2.5 Flash Lite
         this.apiConfigs = {
-            'gemini-3-flash-preview': {
-                name: 'Gemini 3 Flash Preview (jeniya.top)',
+            'gemini-2.5-flash-lite': {
+                name: 'Gemini 2.5 Flash Lite (jeniya.top)',
                 baseURL: 'https://jeniya.top/v1/chat/completions',
                 apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
-                model: 'gemini-3-flash-preview',
+                model: 'gemini-2.5-flash-lite',
                 temperature: 0.8,
                 max_tokens: 16384,
                 timeout: 360000,
-                description: 'Gemini 3 Flash Preview模型，专业的文本生成',
+                description: 'Gemini 2.5 Flash Lite模型，专业的文本生成',
                 features: ['文本生成', '逻辑推理', '创意写作', '快速响应'],
                 status: 'stable',
                 icon: 'fas fa-bolt',
@@ -23,8 +23,8 @@ class StoreActivityAPIClient {
             }
         };
 
-        // 默认使用Gemini 3 Flash Preview
-        this.currentApiKey = 'gemini-3-flash-preview';
+        // 默认使用Gemini 2.5 Flash Lite
+        this.currentApiKey = 'gemini-2.5-flash-lite';
         this.config = this.getCurrentConfig();
 
         this.retryConfig = {

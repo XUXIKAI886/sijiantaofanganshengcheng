@@ -9,14 +9,14 @@ class DataStatisticsApiClient {
         this.config = {
             baseUrl: this.getAPIBaseURL(),
             apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-2.5-flash-lite',
             temperature: 0.8,
             max_tokens: 16384,
             timeout: 600000  // 10分钟超时
         };
 
         console.log('[数据统计API] 客户端初始化完成');
-        console.log('[数据统计API] 使用模型: gemini-3-flash-preview');
+        console.log('[数据统计API] 使用模型: gemini-2.5-flash-lite');
         console.log('[数据统计API] 使用API地址:', this.config.baseUrl);
     }
 

@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "functions": {
+    "api/generate-pdf.js": {
+      "maxDuration": 60
+    }
+  },
   "headers": [
     {
       "source": "/api/(.*)",

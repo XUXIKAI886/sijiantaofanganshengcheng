@@ -1,36 +1,35 @@
 /**
- * 商圈调研分析 - Gemini 3 Flash Preview API客户端
- * 负责与Gemini 3 Flash Preview API的通信，支持多模态分析
+ * 商圈调研分析 - Gemini 2.5 Flash Lite API客户端
+ * 负责与Gemini 2.5 Flash Lite API的通信，支持多模态分析
  */
 
 class MarketAPIClient {
     constructor() {
-        // API配置 - 使用Gemini 3 Flash Preview
+        // API配置 - 使用Gemini 2.5 Flash Lite
         this.apiConfigs = {
-            'gemini-3-flash-preview': {
-                name: 'Gemini 3 Flash Preview (jeniya.top)',
+            'gemini-2.5-flash-lite': {
+                name: 'Gemini 2.5 Flash Lite (jeniya.top)',
                 baseURL: 'https://jeniya.top/v1/chat/completions',
                 apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
-                model: 'gemini-3-flash-preview',
+                model: 'gemini-2.5-flash-lite',
                 temperature: 0.8,
-                max_tokens: 16384, // 增加到16K tokens
+                max_tokens: 16384,
                 timeout: 360000,
-                description: 'Gemini 3 Flash Preview模型，支持截图分析，性能更强',
+                description: 'Gemini 2.5 Flash Lite模型，支持截图分析',
                 features: ['支持截图分析', '响应快速', '性能稳定', '多模态支持'],
                 status: 'stable',
                 icon: 'fas fa-bolt',
                 color: '#ff6b35',
-                // API能力标记
                 capabilities: {
                     textGeneration: true,
-                    imageAnalysis: true,  // 确认支持截图分析
-                    multiModal: true      // 确认支持多模态
+                    imageAnalysis: true,
+                    multiModal: true
                 }
             }
         };
 
-        // 使用Gemini 3 Flash Preview API
-        this.currentApiKey = 'gemini-3-flash-preview';
+        // 使用Gemini 2.5 Flash Lite API
+        this.currentApiKey = 'gemini-2.5-flash-lite';
 
         // 启用健康检查功能
         this.useHealthCheck = true;

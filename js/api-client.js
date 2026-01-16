@@ -1,5 +1,5 @@
 /**
- * Gemini 3 Flash Preview API 客户端
+ * Gemini 2.5 Flash Lite API 客户端
  * 负责与Gemini API的通信，专业的品牌分析服务
  */
 
@@ -8,7 +8,7 @@ class APIClient {
         this.config = {
             baseURL: this.getAPIBaseURL(),
             apiKey: 'sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos',
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-2.5-flash-lite',
             temperature: 0.8,
             max_tokens: 16384,
             timeout: 360000
