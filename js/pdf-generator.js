@@ -1,6 +1,6 @@
 /**
- * PDF生成器 v4.0
- * 修复空白页面问题 - 使用absolute定位确保html2canvas正确捕获
+ * PDF生成器 v5.0
+ * 修复样式和标题重复问题
  */
 
 class PDFGenerator {
@@ -12,6 +12,25 @@ class PDFGenerator {
             'store-activity': { name: '店铺活动方案', color: '#f97316' },
             'data-statistics': { name: '数据统计分析报告', color: '#667eea' }
         };
+    }
+
+    /**
+     * 清理内容中的重复标题
+     */
+    cleanContent(contentElement) {
+        const clone = contentElement.cloneNode(true);
+
+        // 移除报告头部区域（避免重复）
+        const selectors = [
+            '.report-header', '[class*="report-header"]',
+            '.header-section', '[class*="header-section"]',
+            '.report-title-section', '.title-section'
+        ];
+        selectors.forEach(sel => {
+            clone.querySelectorAll(sel).forEach(el => el.remove());
+        });
+
+        return clone.innerHTML;
     }
 
     /**
@@ -47,7 +66,10 @@ class PDFGenerator {
         document.body.appendChild(loadingDiv);
 
         try {
-            // 创建PDF内容容器 - 使用absolute定位，确保在视口内可见
+            // 清理内容，移除重复标题
+            const cleanedContent = this.cleanContent(contentElement);
+
+            // 创建PDF内容容器
             const pdfDiv = document.createElement('div');
             pdfDiv.id = 'pdf-content-wrapper';
             pdfDiv.style.cssText = `
@@ -57,53 +79,16 @@ class PDFGenerator {
                 width: 794px;
                 background: white;
                 z-index: 99998;
-                padding: 30px;
+                padding: 20px;
                 box-sizing: border-box;
-                overflow: visible;
+                font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+                font-size: 14px;
+                line-height: 1.8;
+                color: #333;
             `;
 
-            // 构建PDF内容
-            pdfDiv.innerHTML = `
-                <!-- 页眉 -->
-                <div style="background: linear-gradient(135deg, ${moduleInfo.color}, #60a5fa);
-                            color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px;
-                                        color: white !important; -webkit-text-fill-color: white !important;
-                                        background: none !important; text-shadow: none !important;">
-                                ${extraData.title || moduleInfo.name}
-                            </div>
-                            <div style="font-size: 14px; opacity: 0.9;
-                                        color: white !important; -webkit-text-fill-color: white !important;">
-                                ${extraData.subtitle || '呈尚策划 · 专业数据分析'}
-                            </div>
-                        </div>
-                        <div style="text-align: right; font-size: 13px;
-                                    color: white !important; -webkit-text-fill-color: white !important;">
-                            <div style="opacity: 0.8;">生成日期</div>
-                            <div>${dateStr}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 报告内容 -->
-                <div style="min-height: 500px; line-height: 1.8; color: #333;">
-                    ${contentElement.innerHTML}
-                </div>
-
-                <!-- 页脚 -->
-                <div style="margin-top: 30px; padding: 20px; background: #f5f5f5;
-                            border-top: 3px solid ${moduleInfo.color}; border-radius: 0 0 12px 12px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
-                        <div>
-                            <span style="color: ${moduleInfo.color}; font-weight: bold;">呈尚策划</span>
-                            &nbsp;|&nbsp; Gemini AI 智能分析
-                        </div>
-                        <div>${moduleInfo.name}</div>
-                    </div>
-                </div>
-            `;
+            // 构建PDF内容（带内嵌样式）
+            pdfDiv.innerHTML = this.buildPDFContent(moduleInfo, extraData, dateStr, cleanedContent);
 
             document.body.appendChild(pdfDiv);
 
@@ -172,7 +157,48 @@ class PDFGenerator {
         const d = new Date();
         return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
     }
+
+    /**
+     * 构建PDF内容HTML
+     */
+    buildPDFContent(moduleInfo, extraData, dateStr, content) {
+        const color = moduleInfo.color;
+        return `
+            <style>
+                .pdf-body h2 { font-size: 16px; color: #fff; background: ${color}; padding: 8px 15px; margin: 20px 0 12px 0; font-weight: bold; border-radius: 6px; }
+                .pdf-body h3 { font-size: 15px; color: ${color}; margin: 15px 0 8px 0; font-weight: 600; border-bottom: 2px solid ${color}; padding-bottom: 5px; }
+                .pdf-body h4 { font-size: 14px; color: #374151; margin: 12px 0 6px 0; font-weight: 600; }
+                .pdf-body p { margin: 8px 0; text-align: justify; color: #4b5563; line-height: 1.8; }
+                .pdf-body ul, .pdf-body ol { margin: 8px 0; padding-left: 24px; }
+                .pdf-body li { margin: 6px 0; line-height: 1.7; color: #4b5563; }
+                .pdf-body strong { color: ${color}; font-weight: 600; }
+                .pdf-body .section { margin: 15px 0; padding: 12px; background: #f9fafb; border-radius: 8px; }
+            </style>
+            <!-- 页眉 -->
+            <div style="background: linear-gradient(135deg, ${color}, #60a5fa); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 22px; font-weight: bold; margin-bottom: 5px; color: white;">${extraData.title || moduleInfo.name}</div>
+                        <div style="font-size: 13px; opacity: 0.9; color: white;">${extraData.subtitle || '呈尚策划 · 专业数据分析'}</div>
+                    </div>
+                    <div style="text-align: right; font-size: 12px; color: white;">
+                        <div style="opacity: 0.8;">生成日期</div>
+                        <div>${dateStr}</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 报告内容 -->
+            <div class="pdf-body">${content}</div>
+            <!-- 页脚 -->
+            <div style="margin-top: 25px; padding: 15px; background: #f5f5f5; border-top: 3px solid ${color};">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #666;">
+                    <div><span style="color: ${color}; font-weight: bold;">呈尚策划</span> | Gemini AI</div>
+                    <div>${moduleInfo.name}</div>
+                </div>
+            </div>
+        `;
+    }
 }
 
 window.pdfGenerator = new PDFGenerator();
-console.log('[PDF生成器] v4.0 已加载');
+console.log('[PDF生成器] v5.0 已加载');
